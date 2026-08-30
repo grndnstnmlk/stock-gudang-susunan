@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Office temporary / lock files
+~$*.xlsx
+~$*.xls
+
+# Environment & IDE
+.venv/
+env/
+venv/
+.vscode/
+.idea/
