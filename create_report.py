@@ -282,9 +282,18 @@ font_saf_super = Font(name='Segoe UI', size=11, bold=True, color='000000')
 font_subhdr_tiny = Font(name='Segoe UI', size=9, bold=True, color='333333')
 font_subhdr = Font(name='Segoe UI', size=11, bold=True, color='000000')
 
-font_data_nogud = Font(name='Segoe UI', size=12, bold=True, color='000000')
-font_data_barkot = Font(name='Segoe UI', size=11, bold=False, color='111111')
-font_data_kg = Font(name='Segoe UI', size=11, bold=True, color='000000')
+def format_kg_display(kg_val):
+    if kg_val is None or kg_val == '' or kg_val == '-':
+        return '-'
+    s = str(kg_val).strip()
+    if '/' in s:
+        parts = [p.strip() for p in s.split('/')]
+        return '/'.join([f"{p} kg" for p in parts])
+    return f"{s} kg"
+
+font_data_nogud = Font(name='Segoe UI', size=11, bold=True, color='0F172A')
+font_data_barkot = Font(name='Segoe UI', size=10, bold=False, color='334155')
+font_data_kg = Font(name='Segoe UI', size=10, bold=True, color='0F766E')
 font_data_jumbo = Font(name='Segoe UI', size=14, bold=True, color='000000')
 font_tingkat = Font(name='Segoe UI', size=11, bold=True, color='000000')
 font_data_regular = Font(name='Segoe UI', size=11, bold=False, color='000000')
@@ -292,6 +301,7 @@ font_data_regular = Font(name='Segoe UI', size=11, bold=False, color='000000')
 fill_banner_eco = PatternFill(start_color='E8EFF5', end_color='E8EFF5', fill_type='solid')
 fill_subhdr_eco = PatternFill(start_color='F2F5F8', end_color='F2F5F8', fill_type='solid')
 fill_tingkat_eco = PatternFill(start_color='F9FAFB', end_color='F9FAFB', fill_type='solid')
+fill_kg_col = PatternFill(start_color='F8FAFC', end_color='F8FAFC', fill_type='solid')
 fill_white = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
 
 # Border halus & rapi (slim, bersih, tidak tebal/bold saat print)
@@ -436,11 +446,11 @@ for b_idx in range(1, 17):
                 c2.fill = fill_white
                 c2.border = border_all_black
                 
-                # Col 3: Kg
-                c3 = ws_full.cell(curr_r, col_s + 2, kg_val)
+                # Col 3: Kg (Format pembeda dengan satuan 'kg' & subtle background)
+                c3 = ws_full.cell(curr_r, col_s + 2, format_kg_display(kg_val))
                 c3.font = font_data_kg
                 c3.alignment = align_center
-                c3.fill = fill_white
+                c3.fill = fill_kg_col
                 c3.border = border_all_black
                 
         ws_full.row_dimensions[curr_r].height = 17
@@ -462,11 +472,11 @@ for col_idx in range(3, 22):
     letter = get_column_letter(col_idx)
     sub_type = (col_idx - 3) % 3
     if sub_type == 0:
-        ws_full.column_dimensions[letter].width = 9.0  # No Gud
+        ws_full.column_dimensions[letter].width = 8.5  # No Gud
     elif sub_type == 1:
-        ws_full.column_dimensions[letter].width = 10.0 # Barkot
+        ws_full.column_dimensions[letter].width = 9.5 # Barkot
     else:
-        ws_full.column_dimensions[letter].width = 6.5  # Kg
+        ws_full.column_dimensions[letter].width = 7.5  # Kg
 
 # ==============================================================================
 # SHEET 2: STOCK RINGKAS (NO GUD SAJA - CETAK PORTRAIT 4 BLOK PER HALAMAN)
@@ -605,9 +615,10 @@ for b_num in range(1, 17):
             c2.border = border_all_black
             
             # Kg
-            c3 = ws2.cell(row=grid_start_r + 3 + r_idx, column=c_base + 2, value=kg_val)
+            c3 = ws2.cell(row=grid_start_r + 3 + r_idx, column=c_base + 2, value=format_kg_display(kg_val))
             c3.font = font_data_kg
             c3.alignment = align_center
+            c3.fill = fill_kg_col
             c3.border = border_all_black
             
     # Label Blok di sisi kanan
@@ -625,11 +636,11 @@ for col in range(1, 22):
     col_letter = get_column_letter(col)
     sub_type = (col - 1) % 3
     if sub_type == 0:
-        ws2.column_dimensions[col_letter].width = 9.0  # No Gud
+        ws2.column_dimensions[col_letter].width = 8.5  # No Gud
     elif sub_type == 1:
-        ws2.column_dimensions[col_letter].width = 10.0 # Barkot
+        ws2.column_dimensions[col_letter].width = 9.5 # Barkot
     else:
-        ws2.column_dimensions[col_letter].width = 6.5  # Kg
+        ws2.column_dimensions[col_letter].width = 7.5  # Kg
 
 # ==============================================================================
 # SHEET 4: REKAPITULASI & PENCARIAN BAL (Database Lengkap)
@@ -752,7 +763,7 @@ for b_num in range(1, 17):
             ws3.cell(r_row, 4, barkot_val).alignment = align_center
             ws3.cell(r_row, 4).font = font_data_barkot
             ws3.cell(r_row, 5, grade_val).alignment = align_center
-            ws3.cell(r_row, 6, kg_val).alignment = align_center
+            ws3.cell(r_row, 6, format_kg_display(kg_val)).alignment = align_center
             ws3.cell(r_row, 6).font = font_data_kg
             ws3.cell(r_row, 7, b["title"]).alignment = align_center
             ws3.cell(r_row, 8, f'T{t_num}').alignment = align_center
