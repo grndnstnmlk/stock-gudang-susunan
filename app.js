@@ -913,14 +913,46 @@ function applyFilters() {
   });
 }
 
-function highlightFirstSearchMatch(query) {
-  const match = baleMeshes.find(m => {
-    const d = m.userData;
-    return m.visible && ((d.noGud && d.noGud.toLowerCase().includes(query)) || (d.barkot && d.barkot.toLowerCase().includes(query)));
-  });
+function getSearchScore(bale, query) {
+  const noGud = String(bale.noGud || '').toLowerCase().trim();
+  const barkot = String(bale.barkot || '').toLowerCase().trim();
+  const grade = String(bale.grade || '').toLowerCase().trim();
+  const q = query.toLowerCase().trim();
 
-  if (match) {
-    selectBale(match.userData, match);
+  // Prioritas 1: Exact match pada No. Gudang (Bobot 100)
+  if (noGud === q) return 100;
+
+  // Prioritas 2: No. Gudang diawali dengan angka pencarian (Bobot 80)
+  if (noGud.startsWith(q)) return 80;
+
+  // Prioritas 3: No. Gudang mengandung angka pencarian (Bobot 60)
+  if (noGud.includes(q)) return 60;
+
+  // Prioritas 4: Exact match pada Barcode (Bobot 40)
+  if (barkot === q) return 40;
+
+  // Prioritas 5: Barcode diawali dengan angka pencarian (Bobot 30)
+  if (barkot.startsWith(q)) return 30;
+
+  // Prioritas 6: Barcode mengandung angka pencarian (Bobot 20)
+  if (barkot.includes(q)) return 20;
+
+  // Prioritas 7: Grade matches (Bobot 10)
+  if (grade === q || grade.startsWith(q)) return 10;
+
+  return 0;
+}
+
+function highlightFirstSearchMatch(query) {
+  const scoredMeshes = baleMeshes
+    .filter(m => m.visible)
+    .map(m => ({ mesh: m, score: getSearchScore(m.userData, query) }))
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (scoredMeshes.length > 0) {
+    const best = scoredMeshes[0].mesh;
+    selectBale(best.userData, best);
   }
 }
 
@@ -1159,27 +1191,37 @@ function renderSearchSuggestions(query) {
   const box = document.getElementById('search-suggestions');
   if (!box) return;
 
-  const matches = balesData.filter(d => {
-    const matchNoGud = d.noGud && String(d.noGud).toLowerCase().includes(query);
-    const matchBarkot = d.barkot && String(d.barkot).toLowerCase().includes(query);
-    const matchGrade = d.grade && String(d.grade).toLowerCase().includes(query);
-    return matchNoGud || matchBarkot || matchGrade;
-  }).slice(0, 10);
+  const q = query.toLowerCase().trim();
+  const scored = balesData
+    .map(b => ({ bale: b, score: getSearchScore(b, q) }))
+    .filter(item => item.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      // Urutkan nomor gudang terkecil ke terbesar jika skor sama
+      return (parseInt(a.bale.noGud) || 0) - (parseInt(b.bale.noGud) || 0);
+    })
+    .slice(0, 10);
 
-  if (matches.length === 0) {
-    box.innerHTML = `<div style="padding:12px; font-size:12px; color:var(--text-muted); text-align:center;">Tidak ada bal yang cocok</div>`;
+  if (scored.length === 0) {
+    box.innerHTML = `<div style="padding:12px; font-size:12px; color:var(--text-muted); text-align:center;">Tidak ada No. Gudang / Bal yang cocok</div>`;
     box.classList.add('show');
     return;
   }
 
   let html = '';
-  matches.forEach(bale => {
+  scored.forEach(({ bale, score }) => {
+    const isNoGudMatch = score >= 60;
+    const badgeTitle = isNoGudMatch ? `No. Gudang #${bale.noGud}` : `Bal #${bale.noGud}`;
     const barkotInfo = (bale.barkot && bale.barkot !== '-') ? ` • Barkot: ${bale.barkot}` : '';
     const kgInfo = (bale.kg && bale.kg !== '-') ? ` • ${bale.kg}kg` : '';
+    const priorityTag = isNoGudMatch ? `<span style="font-size:9px; background:rgba(14,165,233,0.25); color:#38bdf8; border:1px solid rgba(56,189,248,0.5); padding:1px 5px; border-radius:4px; margin-left:6px; font-weight:700;">NO GUD</span>` : '';
+
     html += `
       <div class="search-suggestion-item" onclick="selectSuggestionBale(${bale.id})">
         <div>
-          <div class="sugg-main"><i class="fa-solid fa-cube" style="color:var(--accent-cyan);"></i> Bal #${bale.noGud}</div>
+          <div class="sugg-main">
+            <i class="fa-solid fa-cube" style="color:var(--accent-cyan);"></i> ${badgeTitle}${priorityTag}
+          </div>
           <div class="sugg-loc">${bale.blockTitle} ➔ ${bale.safName} (T${bale.layerLevel})</div>
         </div>
         <div class="sugg-meta">
