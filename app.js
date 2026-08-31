@@ -1352,6 +1352,20 @@ function resetAllUI() {
 
   // 7. Re-apply Filters to Restore 100% Opacity and Materials
   applyFilters();
+
+  // 8. Force reset browser scroll and camera zoom/projection
+  window.scrollTo(0, 0);
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+
+  if (camera) {
+    camera.zoom = 1;
+    camera.updateProjectionMatrix();
+  }
+  if (controls) {
+    controls.target.set(0, 1.8, 4.8);
+  }
+  onWindowResize();
 }
 
 function resetCameraOverview() {
