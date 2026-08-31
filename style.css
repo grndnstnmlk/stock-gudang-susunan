@@ -800,3 +800,93 @@ body {
   border-color: var(--accent-cyan);
   background: rgba(56, 189, 248, 0.05);
 }
+
+/* ==============================================================================
+   MOBILE & IPHONE 16 PRO MAX RESPONSIVE OPTIMIZATION
+   ============================================================================== */
+#canvas-container {
+  touch-action: none; /* Prevent iOS Safari pull-to-refresh while orbiting */
+}
+
+@media (max-width: 1024px) {
+  .top-navbar {
+    height: auto;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-wrapper {
+    width: 100%;
+    order: 3;
+  }
+
+  .brand-title {
+    font-size: 14px;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .block-quickbar {
+    top: 110px;
+    max-width: 95vw;
+  }
+
+  .left-controls-panel {
+    top: 155px;
+    width: 280px;
+    max-height: 48vh;
+  }
+
+  .inspector-drawer {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    border-radius: 20px 20px 0 0;
+    max-height: 65vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+  }
+
+  .inspector-drawer.open {
+    transform: translateY(0);
+  }
+
+  .camera-bar {
+    bottom: 12px;
+    max-width: 95vw;
+    overflow-x: auto;
+    padding: 4px 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cam-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .location-finder-card {
+    top: 155px;
+    width: 90vw;
+    padding: 10px 14px;
+  }
+
+  .finder-coords {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-value {
+    font-size: 15px;
+  }
+}
