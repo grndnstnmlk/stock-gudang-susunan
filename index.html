@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Digital Twin Stock Gudang Tembakau (16 Blok)</title>
+  
+  <!-- Modern Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome / Icon Library CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- SheetJS for Excel Reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <!-- 3D Canvas Viewport -->
+  <div id="canvas-container"></div>
+
+  <!-- Hover 3D Tooltip -->
+  <div id="hover-tooltip"></div>
+
+  <!-- Top Navbar Header -->
+  <header class="top-navbar glass-panel">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <i class="fa-solid fa-cubes-stacked"></i>
+      </div>
+      <div>
+        <h1 class="brand-title">3D Digital Twin Gudang Tembakau</h1>
+        <p class="brand-subtitle">Visualisasi Spasial 16 Blok Susunan Bal • 30 Agustus 2026</p>
+      </div>
+    </div>
+
+    <!-- Unified Search: No Gudang & Barcode -->
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="input-search" class="search-input" placeholder="Ketik No. Gudang atau Barcode untuk mencari...">
+    </div>
+
+    <div class="nav-actions">
+      <button id="btn-upload-excel" class="btn-pill">
+        <i class="fa-solid fa-file-excel" style="color: #10b981;"></i>
+        <span>Import Excel</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Location Finder HUD (Muncul saat bal ditemukan) -->
+  <div id="location-finder-hud" class="location-finder-card">
+    <div class="finder-icon">
+      <i class="fa-solid fa-location-dot"></i>
+    </div>
+    <div class="finder-info">
+      <div class="finder-title" id="hud-match-title">BAL DITEMUKAN</div>
+      <div class="finder-coords">
+        <span class="finder-badge-block" id="hud-block">BLOK 01</span>
+        <span>➔</span>
+        <span class="finder-badge-saf" id="hud-saf">SAF 1</span>
+        <span>➔</span>
+        <span class="finder-badge-tingkat" id="hud-tingkat">TINGKAT 4 (T4)</span>
+      </div>
+    </div>
+    <button id="close-hud-btn" class="finder-close-btn"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <nav class="block-quickbar">
+    <button class="block-tab-btn active" data-block="all">Semua Blok</button>
+    <button class="block-tab-btn" data-block="1">Blok 01</button>
+    <button class="block-tab-btn" data-block="2">Blok 02</button>
+    <button class="block-tab-btn" data-block="3">Blok 03</button>
+    <button class="block-tab-btn" data-block="4">Blok 04</button>
+    <button class="block-tab-btn" data-block="5">Blok 05</button>
+    <button class="block-tab-btn" data-block="6">Blok 06</button>
+    <button class="block-tab-btn" data-block="7">Blok 07</button>
+    <button class="block-tab-btn" data-block="8">Blok 08</button>
+    <button class="block-tab-btn" data-block="9">Blok 09</button>
+    <button class="block-tab-btn" data-block="10">Blok 10</button>
+    <button class="block-tab-btn" data-block="11">Blok 11</button>
+    <button class="block-tab-btn" data-block="12">Blok 12</button>
+    <button class="block-tab-btn" data-block="13">Blok 13</button>
+    <button class="block-tab-btn" data-block="14">Blok 14</button>
+    <button class="block-tab-btn" data-block="15">Blok 15</button>
+    <button class="block-tab-btn" data-block="16">Blok 16</button>
+  </nav>
+
+  <!-- Left Control & Stats Panel -->
+  <aside class="left-controls-panel glass-panel">
+    
+    <!-- Real-time Stats Grid -->
+    <div>
+      <div class="section-title">
+        <span><i class="fa-solid fa-chart-pie"></i> Ringkasan Gudang</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Total Bal Terisi</div>
+          <div class="stat-value" id="stat-total-bales">374 <span class="stat-unit">bal</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total Tonase</div>
+          <div class="stat-value" id="stat-total-weight">0.00 <span class="stat-unit">Ton</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Rata-rata Berat</div>
+          <div class="stat-value" id="stat-avg-weight">0 <span class="stat-unit">Kg/bal</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Keterisian Blok</div>
+          <div class="stat-value" id="stat-occupancy">97 <span class="stat-unit">%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Mode Selection -->
+    <div>
+      <div class="section-title">
+        <span><i class="fa-solid fa-palette"></i> Mode Warna Bal</span>
+      </div>
+      <div class="color-mode-pills">
+        <div class="pill-option active" data-mode="grade">Berdasarkan Grade</div>
+        <div class="pill-option" data-mode="weight">Heatmap Berat (Kg)</div>
+        <div class="pill-option" data-mode="layer">Warna Tingkat (T1-T4)</div>
+        <div class="pill-option" data-mode="realistic">Tekstur Karung Goni</div>
+      </div>
+    </div>
+
+    <!-- Filter Blok -->
+    <div class="filter-group">
+      <div class="section-title">
+        <span><i class="fa-solid fa-warehouse"></i> Filter Lokasi Blok</span>
+      </div>
+      <select id="filter-block" class="select-custom">
+        <option value="all">Semua Blok (Blok 01 s/d Blok 16)</option>
+        <option value="1">BLOK 01 (Saf 1-6)</option>
+        <option value="2">BLOK 02 (Saf 1-6)</option>
+        <option value="3">BLOK 03 (Saf 1-6)</option>
+        <option value="4">BLOK 04 (Saf 1-6)</option>
+        <option value="5">BLOK 05 (Saf 1-6)</option>
+        <option value="6">BLOK 06 (Saf 1-5)</option>
+        <option value="7">BLOK 07 (Saf 1-5)</option>
+        <option value="8">BLOK 08 (Saf 1-5)</option>
+        <option value="9">BLOK 09 (Saf 1-5)</option>
+        <option value="10">BLOK 10 (Saf 1-5)</option>
+        <option value="11">BLOK 11 (Saf 1-6)</option>
+        <option value="12">BLOK 12 (Saf 1-6)</option>
+        <option value="13">BLOK 13 (Saf 1-6)</option>
+        <option value="14">BLOK 14 (Saf 1-6)</option>
+        <option value="15">BLOK 15 (Saf 1-6)</option>
+        <option value="16">BLOK 16 (Saf 1-6)</option>
+      </select>
+    </div>
+
+    <!-- Filter Grade -->
+    <div class="filter-group">
+      <div class="section-title">
+        <span><i class="fa-solid fa-tag"></i> Filter Kategori Grade</span>
+      </div>
+      <select id="filter-grade" class="select-custom">
+        <option value="all">Semua Grade</option>
+      </select>
+    </div>
+
+    <!-- Layer / Tingkat Toggle -->
+    <div class="filter-group">
+      <div class="section-title">
+        <span><i class="fa-solid fa-layer-group"></i> Filter Tingkat / Layer</span>
+      </div>
+      <div class="layer-buttons">
+        <button class="layer-btn active" data-layer="1">T1 (Dasar)</button>
+        <button class="layer-btn active" data-layer="2">T2</button>
+        <button class="layer-btn active" data-layer="3">T3</button>
+        <button class="layer-btn active" data-layer="4">T4 (Atas)</button>
+      </div>
+    </div>
+
+    <!-- Exploded View Slider -->
+    <div class="slider-container">
+      <div class="slider-header">
+        <span><i class="fa-solid fa-arrows-up-down"></i> Explode / Angkat Tingkat</span>
+        <span id="explode-val" style="color: var(--accent-cyan); font-weight: 700;">0x</span>
+      </div>
+      <input type="range" id="slider-explode" class="range-slider" min="0" max="3" step="0.1" value="0">
+    </div>
+
+    <!-- Grade Legend -->
+    <div>
+      <div class="section-title">
+        <span><i class="fa-solid fa-list-check"></i> Distribusi Grade Terbanyak</span>
+      </div>
+      <div class="legend-container" id="grade-legend-list">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Camera Presets Floating Bar -->
+  <div class="camera-bar glass-panel">
+    <button class="cam-btn active" data-cam="iso"><i class="fa-solid fa-cube"></i> Isometric 3D</button>
+    <button class="cam-btn" data-cam="top"><i class="fa-solid fa-map"></i> Denah Atas (2D)</button>
+    <button class="cam-btn" data-cam="front"><i class="fa-solid fa-eye"></i> Tampak Depan (Selatan)</button>
+    <button class="cam-btn" data-cam="west"><i class="fa-solid fa-arrow-left"></i> Sisi Barat (Blok 1-8)</button>
+    <button class="cam-btn" data-cam="east"><i class="fa-solid fa-arrow-right"></i> Sisi Timur (Blok 9-16)</button>
+  </div>
+
+  <!-- Right Inspector Drawer (Detail Bal yang Diklik) -->
+  <aside id="inspector-drawer" class="inspector-drawer glass-panel">
+    <div class="drawer-header">
+      <div class="drawer-title"><i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Detail Bal Terpilih</div>
+      <button id="close-drawer-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="bal-hero-badge">
+      <div>
+        <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">NO. GUDANG</div>
+        <div id="inspect-nogud" class="bal-nogud-big">-</div>
+      </div>
+      <div id="inspect-grade" class="bal-grade-tag">-</div>
+    </div>
+
+    <div class="detail-table">
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-barcode"></i> Nomor Barcode</span>
+        <span id="inspect-barkot" class="detail-val">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-weight-hanging"></i> Berat Kotor</span>
+        <span id="inspect-kg" class="detail-val" style="color: var(--accent-emerald);">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-building"></i> Posisi Blok</span>
+        <span id="inspect-block" class="detail-val">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-arrows-left-right"></i> Kolom Saf</span>
+        <span id="inspect-saf" class="detail-val">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-layer-group"></i> Elevasi Tingkat</span>
+        <span id="inspect-tingkat" class="detail-val">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key"><i class="fa-solid fa-shield-halved"></i> Status</span>
+        <span id="inspect-status" class="detail-val" style="color: var(--accent-cyan);">-</span>
+      </div>
+    </div>
+
+    <!-- Alert Rekomendasi Pembongkaran Bal (Jika bal tertindih di T1-T3) -->
+    <div id="unstack-alert-box" class="unstack-card" style="display: none;">
+      <i class="fa-solid fa-triangle-exclamation"></i> <b>Bal Tertindih!</b>
+      <div id="unstack-desc" style="margin-top: 4px; font-size: 10px;"></div>
+    </div>
+
+    <!-- Interactive Cross-Section Matrix of the Block -->
+    <div class="matrix-container">
+      <div class="matrix-header">
+        <span><i class="fa-solid fa-table-cells"></i> Matriks Blok (Tampak Utara)</span>
+        <span id="matrix-block-name" style="color: #fff;">BLOK 01</span>
+      </div>
+      <div id="matrix-grid-view">
+        <!-- Dynamically rendered table -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- Excel Upload Modal Dialog -->
+  <div id="upload-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="drawer-header">
+        <div class="drawer-title"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Update Data dari Excel (.xlsx)</div>
+        <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+        Upload file <code>Dokumen_Rekap_NoGud_Barkot_Kg.xlsx</code> atau file laporan susunan bal untuk me-refresh data dan visualisasi 3D secara langsung.
+      </p>
+
+      <div id="excel-dropzone" class="dropzone">
+        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: var(--accent-cyan); margin-bottom: 12px;"></i>
+        <div style="font-size: 13px; font-weight: 600; color: #fff;">Tarik & Lepas File Excel Disini</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">atau klik untuk memilih file dari komputer Anda (.xlsx)</div>
+        <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded Warehouse Data for Zero-CORS standalone execution -->
+  <script src="warehouse_data.js"></script>
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
