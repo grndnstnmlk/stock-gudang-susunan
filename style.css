@@ -1100,7 +1100,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
     font-size: 13px !important;
   }
 
-  /* Quickbar Positioned Cleanly Under Navbar in natural flex layout */
+  /* Quickbar Positioned Cleanly Under Navbar with full visibility */
   .block-quickbar {
     position: relative !important;
     top: auto !important;
@@ -1108,17 +1108,32 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
     right: auto !important;
     width: 100% !important;
     max-width: 100% !important;
+    align-self: stretch !important;
     border-radius: var(--radius-md) !important;
-    padding: 6px 8px !important;
+    padding: 8px 10px !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(15, 23, 42, 0.92) !important;
+    border: 1px solid var(--border-color) !important;
+    backdrop-filter: blur(16px) !important;
+    scrollbar-width: none !important;
+  }
+
+  .block-quickbar::-webkit-scrollbar {
+    display: none !important;
   }
 
   .block-tab-btn {
-    padding: 5px 10px !important;
+    flex-shrink: 0 !important;
+    padding: 6px 12px !important;
     font-size: 11px !important;
+    font-weight: 700 !important;
     white-space: nowrap !important;
+    border-radius: 9999px !important;
   }
 
   /* Off-Canvas Left Control Drawer (Hidden by default, slides in when requested) */
@@ -1168,13 +1183,27 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
     transform: translateY(0);
   }
 
+  /* Hide duplicate camera bar on mobile (Replaced by clean Mobile Bottom Nav) */
+  .camera-bar {
+    display: none !important;
+  }
+
+  .location-finder-card {
+    bottom: 76px !important;
+    top: auto !important;
+    width: calc(100vw - 20px) !important;
+    padding: 8px 12px;
+    z-index: 960 !important;
+  }
+}
+
 .mobile-bottom-nav {
   display: none;
 }
 
 @media (max-width: 1024px) {
   .mobile-bottom-nav {
-    display: flex;
+    display: flex !important;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -1219,18 +1248,6 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   .m-nav-btn:active {
     transform: scale(0.92);
     color: var(--accent-cyan);
-  }
-
-  .camera-bar {
-    bottom: 74px !important;
-  }
-
-  .location-finder-card {
-    bottom: 76px !important;
-    top: auto !important;
-    width: calc(100vw - 20px) !important;
-    padding: 8px 12px;
-    z-index: 960 !important;
   }
 }
 
