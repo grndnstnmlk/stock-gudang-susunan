@@ -755,6 +755,40 @@ function setupUIEventListeners() {
     });
   }
 
+  // Mobile Bottom Bar Navigation Actions
+  const mBtnDenah = document.getElementById('m-btn-denah');
+  const mBtnSearch = document.getElementById('m-btn-search');
+  const mBtnFilter = document.getElementById('m-btn-filter');
+  const mBtnReset = document.getElementById('m-btn-reset');
+
+  if (mBtnDenah && denahModal) {
+    mBtnDenah.addEventListener('click', () => {
+      renderAllBlocks2DGrid();
+      denahModal.classList.add('show');
+    });
+  }
+
+  if (mBtnSearch && searchInput) {
+    mBtnSearch.addEventListener('click', () => {
+      searchInput.focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (activeFilter.searchQuery) renderSearchSuggestions(activeFilter.searchQuery);
+    });
+  }
+
+  if (mBtnFilter && leftPanel) {
+    mBtnFilter.addEventListener('click', () => {
+      leftPanel.classList.add('open');
+      if (panelBackdrop) panelBackdrop.classList.add('active');
+    });
+  }
+
+  if (mBtnReset) {
+    mBtnReset.addEventListener('click', () => {
+      resetCameraOverview();
+    });
+  }
+
   // Close Location HUD Button
   const closeHudBtn = document.getElementById('close-hud-btn');
   if (closeHudBtn) {
