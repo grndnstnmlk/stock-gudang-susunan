@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- App Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="style.css?v=3.1">
+  <link rel="stylesheet" href="style.css?v=3.2">
 
   <!-- Three.js & OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -42,13 +42,18 @@
       </div>
     </div>
 
-    <!-- Unified Search: No Gudang & Barcode -->
+    <!-- Unified Search: No Gudang & Barcode with Instant Autocomplete -->
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="input-search" class="search-input" placeholder="Ketik No. Gudang atau Barcode untuk mencari...">
+      <input type="text" id="input-search" class="search-input" placeholder="Ketik No. Gudang / Barcode..." autocomplete="off">
+      <div id="search-suggestions" class="search-dropdown-menu"></div>
     </div>
 
     <div class="nav-actions">
+      <button id="btn-toggle-2d-view" class="btn-pill">
+        <i class="fa-solid fa-table-cells" style="color: #38bdf8;"></i>
+        <span>Denah 2D</span>
+      </button>
       <button id="btn-toggle-panel" class="btn-pill">
         <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i>
         <span>Filter & Stats</span>
@@ -59,6 +64,24 @@
       </button>
     </div>
   </header>
+
+  <!-- Full-Screen Interactive 2D Warehouse Blueprint Modal -->
+  <div id="denah-2d-modal" class="denah-modal-backdrop">
+    <div class="denah-modal-content glass-panel">
+      <div class="denah-modal-header">
+        <div class="drawer-title">
+          <i class="fa-solid fa-table-cells" style="color: #38bdf8;"></i> Denah Susunan Bal Gudang Tembakau (2D Grid)
+        </div>
+        <button id="close-denah-2d-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        💡 Ketuk nomor bal pada tabel untuk langsung melompat dan melihat posisi 3D-nya.
+      </p>
+      <div id="all-blocks-matrix-container" class="all-blocks-grid-scroll">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
 
   <!-- Location Finder HUD (Muncul saat bal ditemukan) -->
   <div id="location-finder-hud" class="location-finder-card">
@@ -310,8 +333,8 @@
   </div>
 
   <!-- Embedded Warehouse Data for Zero-CORS standalone execution -->
-  <script src="warehouse_data.js?v=3.1"></script>
+  <script src="warehouse_data.js?v=3.2"></script>
   <!-- Application Logic with Cache Buster -->
-  <script src="app.js?v=3.1"></script>
+  <script src="app.js?v=3.2"></script>
 </body>
 </html>

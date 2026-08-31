@@ -397,7 +397,16 @@ function getBaleCanvasTexture(baleData, colorMode) {
 
   const canvas = document.createElement('canvas');
   canvas.width = 256;
-  canvas.height = 256;
+// Realistic Tobacco Bale Texture Generator & Cache (High DPI & Big Sharp Numbers)
+const baleTextureCache = {};
+
+function getBaleCanvasTexture(baleData, colorMode) {
+  const cacheKey = `${baleData.noGud}_${baleData.grade}_${colorMode}`;
+  if (baleTextureCache[cacheKey]) return baleTextureCache[cacheKey];
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
   // Base Burlap / Jute Sack Color
@@ -426,48 +435,49 @@ function getBaleCanvasTexture(baleData, colorMode) {
 
   // 1. Fill base jute tone
   ctx.fillStyle = baseColor;
-  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillRect(0, 0, 512, 512);
 
   // 2. Add Jute Woven Pattern (Fibers cross-hatching)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
-  for (let x = 0; x < 256; x += 6) {
-    ctx.fillRect(x, 0, 3, 256);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+  for (let x = 0; x < 512; x += 10) {
+    ctx.fillRect(x, 0, 5, 512);
   }
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-  for (let y = 0; y < 256; y += 6) {
-    ctx.fillRect(0, y, 256, 3);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+  for (let y = 0; y < 512; y += 10) {
+    ctx.fillRect(0, y, 512, 5);
   }
 
   // 3. Stitched border edge
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.28)';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(4, 4, 248, 248);
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(6, 6, 500, 500);
 
-  // 4. White Warehouse Stencil / Paper Label on front of bale
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-  ctx.fillRect(36, 52, 184, 152);
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-  ctx.lineWidth = 2.5;
-  ctx.strokeRect(36, 52, 184, 152);
+  // 4. White Warehouse Stencil / Paper Label (GIANT & HIGH CONTRAST)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(36, 50, 440, 412);
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(36, 50, 440, 412);
 
-  // Print No. Gudang
-  ctx.fillStyle = '#0f172a';
-  ctx.font = "Bold 40px 'Inter', sans-serif";
+  // Print BIG BOLD No. Gudang
+  ctx.fillStyle = '#000000';
+  ctx.font = "900 125px 'Inter', sans-serif";
   ctx.textAlign = 'center';
-  ctx.fillText(String(baleData.noGud), 128, 112);
+  ctx.fillText(String(baleData.noGud), 256, 195);
 
-  // Print Barcode / Grade label
-  ctx.font = "Bold 18px 'Inter', sans-serif";
-  ctx.fillStyle = '#334155';
+  // Print Grade and Weight
+  ctx.font = "bold 44px 'Inter', sans-serif";
+  ctx.fillStyle = '#1e293b';
   const tagGrade = baleData.grade && baleData.grade !== 'UNGRADED' ? `GR: ${baleData.grade}` : '';
   const tagKg = (baleData.kg && baleData.kg !== '-') ? `${baleData.kg}kg` : '';
   const subInfo = [tagGrade, tagKg].filter(Boolean).join(' • ') || 'TEMBAKAU';
-  ctx.fillText(subInfo, 128, 155);
+  ctx.fillText(subInfo, 256, 295);
 
+  // Print Barcode
   if (baleData.barkot && baleData.barkot !== '-') {
-    ctx.font = "14px monospace";
+    ctx.font = "bold 36px monospace";
     ctx.fillStyle = '#0284c7';
-    ctx.fillText(`*${baleData.barkot}*`, 128, 185);
+    ctx.fillText(`*${baleData.barkot}*`, 256, 385);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -692,19 +702,56 @@ function setupUIEventListeners() {
     });
   }
 
-  // Search Input (Real-time unified search for No Gud & Barkot)
+  // Search Input (Real-time unified search for No Gud & Barkot with Suggestions)
   const searchInput = document.getElementById('input-search');
+  const suggestionsBox = document.getElementById('search-suggestions');
+
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       activeFilter.searchQuery = e.target.value.trim().toLowerCase();
       applyFilters();
+      
       if (activeFilter.searchQuery) {
+        renderSearchSuggestions(activeFilter.searchQuery);
         highlightFirstSearchMatch(activeFilter.searchQuery);
       } else {
+        if (suggestionsBox) {
+          suggestionsBox.innerHTML = '';
+          suggestionsBox.classList.remove('show');
+        }
         hideLocationFinderHUD();
         removeBeacon();
         resetCameraOverview();
       }
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (activeFilter.searchQuery) renderSearchSuggestions(activeFilter.searchQuery);
+    });
+
+    // Close suggestions when clicked outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-wrapper') && suggestionsBox) {
+        suggestionsBox.classList.remove('show');
+      }
+    });
+  }
+
+  // 2D Denah Blueprint Modal Toggle & Close
+  const toggle2dBtn = document.getElementById('btn-toggle-2d-view');
+  const close2dBtn = document.getElementById('close-denah-2d-btn');
+  const denahModal = document.getElementById('denah-2d-modal');
+
+  if (toggle2dBtn && denahModal) {
+    toggle2dBtn.addEventListener('click', () => {
+      renderAllBlocks2DGrid();
+      denahModal.classList.add('show');
+    });
+  }
+
+  if (close2dBtn && denahModal) {
+    close2dBtn.addEventListener('click', () => {
+      denahModal.classList.remove('show');
     });
   }
 
@@ -1078,13 +1125,125 @@ window.handleMatrixCellClick = function(blockId, safIndex, layerLevel) {
 };
 
 // ==============================================================================
-// 5. CAMERA ANIMATION & PRESETS
+// 5. SEARCH AUTOCOMPLETE & 2D BLUEPRINT MATRIX
+// ==============================================================================
+function renderSearchSuggestions(query) {
+  const box = document.getElementById('search-suggestions');
+  if (!box) return;
+
+  const matches = balesData.filter(d => {
+    const matchNoGud = d.noGud && String(d.noGud).toLowerCase().includes(query);
+    const matchBarkot = d.barkot && String(d.barkot).toLowerCase().includes(query);
+    const matchGrade = d.grade && String(d.grade).toLowerCase().includes(query);
+    return matchNoGud || matchBarkot || matchGrade;
+  }).slice(0, 10);
+
+  if (matches.length === 0) {
+    box.innerHTML = `<div style="padding:12px; font-size:12px; color:var(--text-muted); text-align:center;">Tidak ada bal yang cocok</div>`;
+    box.classList.add('show');
+    return;
+  }
+
+  let html = '';
+  matches.forEach(bale => {
+    const barkotInfo = (bale.barkot && bale.barkot !== '-') ? ` • Barkot: ${bale.barkot}` : '';
+    const kgInfo = (bale.kg && bale.kg !== '-') ? ` • ${bale.kg}kg` : '';
+    html += `
+      <div class="search-suggestion-item" onclick="selectSuggestionBale(${bale.id})">
+        <div>
+          <div class="sugg-main"><i class="fa-solid fa-cube" style="color:var(--accent-cyan);"></i> Bal #${bale.noGud}</div>
+          <div class="sugg-loc">${bale.blockTitle} ➔ ${bale.safName} (T${bale.layerLevel})</div>
+        </div>
+        <div class="sugg-meta">
+          <span style="color:#fef08a; font-weight:700;">${bale.grade || '-'}</span>${kgInfo}${barkotInfo}
+        </div>
+      </div>
+    `;
+  });
+
+  box.innerHTML = html;
+  box.classList.add('show');
+}
+
+window.selectSuggestionBale = function(baleId) {
+  const targetBale = balesData.find(b => b.id === baleId);
+  if (targetBale) {
+    const targetMesh = baleMeshes.find(m => m.userData.id === baleId);
+    selectBale(targetBale, targetMesh);
+    const box = document.getElementById('search-suggestions');
+    if (box) box.classList.remove('show');
+  }
+};
+
+function renderAllBlocks2DGrid() {
+  const container = document.getElementById('all-blocks-matrix-container');
+  if (!container) return;
+
+  let html = '';
+  for (let bId = 1; bId <= 16; bId++) {
+    const blockBales = balesData.filter(b => b.blockId === bId);
+    if (blockBales.length === 0) continue;
+
+    html += `
+      <div class="block-section-card">
+        <div class="block-section-title">
+          <i class="fa-solid fa-cubes-stacked"></i> BLOK ${String(bId).padStart(2, '0')} (Total: ${blockBales.length} Bal)
+        </div>
+        <table class="matrix-grid-table" style="font-size:11px;">
+          <thead>
+            <tr>
+              <th style="width: 50px;">Tingkat</th>
+              <th>Saf 1 (Utara)</th>
+              <th>Saf 2</th>
+              <th>Saf 3</th>
+              <th>Saf 4</th>
+              <th>Saf 5</th>
+              <th>Saf 6 (Selatan)</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    for (let lvl = 4; lvl >= 1; lvl--) {
+      html += `<tr><td style="font-weight:700; color:var(--text-muted);">T${lvl}</td>`;
+      for (let sIdx = 1; sIdx <= 6; sIdx++) {
+        const found = blockBales.find(b => b.safIndex === sIdx && b.layerLevel === lvl);
+        if (found) {
+          const noGud = found.noGud;
+          const gr = (found.grade && found.grade !== 'UNGRADED') ? ` <span style="font-size:9px; color:#fef08a;">(${found.grade})</span>` : '';
+          html += `<td style="cursor:pointer; background:rgba(16,185,129,0.22); border:1px solid rgba(16,185,129,0.5); font-weight:700; color:#fff; padding:6px 2px;" onclick="jumpFrom2DTo3D(${found.id})">#${noGud}${gr}</td>`;
+        } else {
+          html += `<td style="color:#475569; background:rgba(15,23,42,0.4); border:1px solid rgba(51,65,85,0.3);">-</td>`;
+        }
+      }
+      html += `</tr>`;
+    }
+
+    html += `</tbody></table></div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+window.jumpFrom2DTo3D = function(baleId) {
+  const modal = document.getElementById('denah-2d-modal');
+  if (modal) modal.classList.remove('show');
+  const targetBale = balesData.find(b => b.id === baleId);
+  if (targetBale) {
+    const targetMesh = baleMeshes.find(m => m.userData.id === baleId);
+    selectBale(targetBale, targetMesh);
+  }
+};
+
+// ==============================================================================
+// 6. CAMERA ANIMATION & PRESETS
 // ==============================================================================
 function setCameraPreset(preset) {
+  const isMobile = window.innerWidth <= 768;
   if (preset === 'iso') {
-    smoothCameraFly(0, 20, -18, 0, 2, 4.8);
+    smoothCameraFly(0, isMobile ? 18 : 20, isMobile ? -24 : -18, 0, 1.8, 4.8);
   } else if (preset === 'top') {
-    smoothCameraFly(0, 42, 4.8, 0, 0, 4.8);
+    smoothCameraFly(0, isMobile ? 48 : 42, 4.8, 0, 0, 4.8);
   } else if (preset === 'front') {
     smoothCameraFly(0, 5, -8, 0, 2, 4.8);
   } else if (preset === 'west') {
@@ -1095,7 +1254,12 @@ function setCameraPreset(preset) {
 }
 
 function resetCameraOverview() {
-  smoothCameraFly(0, 20, -18, 0, 2, 4.8);
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    smoothCameraFly(0, 18, -24, 0, 1.8, 4.8);
+  } else {
+    smoothCameraFly(0, 20, -18, 0, 2, 4.8);
+  }
 }
 
 function focusOnBlock(blockId) {
@@ -1103,7 +1267,6 @@ function focusOnBlock(blockId) {
   if (!grp) return;
   const targetX = grp.position.x;
   const targetZ = grp.position.z;
-  // Sudut pandang samping sisi Timur/Selatan memperlihatkan profil lengkap Saf 1 s/d Saf 6 & T1 s/d T4
   smoothCameraFly(targetX + 8.5, 4.8, targetZ + 1.5, targetX, 1.8, targetZ);
 }
 

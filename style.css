@@ -137,7 +137,132 @@ body {
   font-size: 14px;
 }
 
-/* Floating Location Finder HUD (Muncul saat pencarian berhasil) */
+/* Instant Search Dropdown Suggestions */
+.search-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid var(--accent-cyan);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 1200;
+  display: none;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+}
+
+.search-dropdown-menu.show {
+  display: flex;
+}
+
+.search-suggestion-item {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.search-suggestion-item:hover, .search-suggestion-item.active {
+  background: rgba(56, 189, 248, 0.15);
+}
+
+.sugg-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sugg-loc {
+  font-size: 11px;
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.sugg-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Fullscreen 2D Blueprint Modal */
+.denah-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.denah-modal-backdrop.show {
+  display: flex;
+}
+
+.denah-modal-content {
+  width: 95vw;
+  max-width: 1200px;
+  height: 90vh;
+  max-height: 850px;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.denah-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.all-blocks-grid-scroll {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-right: 8px;
+}
+
+.block-section-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.block-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .location-finder-card {
   position: absolute;
   top: 86px;
