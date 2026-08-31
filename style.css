@@ -55,19 +55,69 @@ body {
   box-shadow: var(--shadow-card);
 }
 
-/* Top Navbar */
+/* Top App Header Container */
+.app-header-container {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
 .top-navbar {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
+  position: relative;
+  width: 100%;
   height: 64px;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  z-index: 10;
+  pointer-events: auto;
+}
+
+.block-quickbar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  max-width: 95vw;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.block-tab-btn {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.block-tab-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+}
+
+.block-tab-btn.active {
+  background: var(--accent-cyan);
+  color: #04101e;
+  border-color: var(--accent-cyan);
+  font-weight: 800;
 }
 
 .brand-section {
@@ -990,14 +1040,23 @@ body {
   }
 
   /* Compact Single-Row Mobile Header */
+  .app-header-container {
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    gap: 6px !important;
+  }
+
   .top-navbar {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    height: auto;
-    padding: 8px 12px;
-    flex-wrap: wrap;
-    gap: 8px;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    height: auto !important;
+    padding: 8px 10px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    border-radius: var(--radius-md) !important;
   }
 
   .brand-logo {
@@ -1016,31 +1075,35 @@ body {
   }
 
   .search-wrapper {
-    width: 100%;
-    order: 3;
-    margin-top: 2px;
+    width: 100% !important;
+    order: 3 !important;
+    margin-top: 4px !important;
   }
 
   .search-input {
-    padding: 8px 14px 8px 34px;
-    font-size: 12px;
+    padding: 10px 14px 10px 36px !important;
+    font-size: 13px !important;
   }
 
-  /* Quickbar Positioned Cleanly Under Navbar */
+  /* Quickbar Positioned Cleanly Under Navbar in natural flex layout */
   .block-quickbar {
-    top: 108px;
-    left: 10px;
-    right: 10px;
-    transform: none;
-    max-width: calc(100vw - 20px);
-    overflow-x: auto;
-    padding: 4px 6px;
-    -webkit-overflow-scrolling: touch;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: var(--radius-md) !important;
+    padding: 6px 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
   }
 
   .block-tab-btn {
-    padding: 4px 8px;
-    font-size: 10px;
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
   }
 
   /* Off-Canvas Left Control Drawer (Hidden by default, slides in when requested) */

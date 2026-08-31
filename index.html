@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- App Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="style.css?v=4.1">
+  <link rel="stylesheet" href="style.css?v=4.2">
 
   <!-- Three.js & OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -30,39 +30,62 @@
   <!-- Hover 3D Tooltip -->
   <div id="hover-tooltip"></div>
 
-  <!-- Top Navbar Header -->
-  <header class="top-navbar glass-panel">
-    <div class="brand-section">
-      <div class="brand-logo">
-        <i class="fa-solid fa-cubes-stacked"></i>
+  <!-- Unified App Header Stack (No Overlapping Elements) -->
+  <header class="app-header-container">
+    <div class="top-navbar glass-panel">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <i class="fa-solid fa-cubes-stacked"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">3D Digital Twin Gudang Tembakau</h1>
+          <p class="brand-subtitle">Visualisasi Spasial 16 Blok Susunan Bal • 30 Agustus 2026</p>
+        </div>
       </div>
-      <div>
-        <h1 class="brand-title">3D Digital Twin Gudang Tembakau</h1>
-        <p class="brand-subtitle">Visualisasi Spasial 16 Blok Susunan Bal • 30 Agustus 2026</p>
+
+      <!-- Unified Search: No Gudang & Barcode with Instant Autocomplete -->
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="input-search" class="search-input" placeholder="Ketik No. Gudang / Barcode..." autocomplete="off">
+        <div id="search-suggestions" class="search-dropdown-menu"></div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btn-toggle-2d-view" class="btn-pill">
+          <i class="fa-solid fa-table-cells" style="color: #38bdf8;"></i>
+          <span>Denah 2D</span>
+        </button>
+        <button id="btn-toggle-panel" class="btn-pill">
+          <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i>
+          <span>Filter & Stats</span>
+        </button>
+        <button id="btn-upload-excel" class="btn-pill desktop-only">
+          <i class="fa-solid fa-file-excel" style="color: #10b981;"></i>
+          <span>Import Excel</span>
+        </button>
       </div>
     </div>
 
-    <!-- Unified Search: No Gudang & Barcode with Instant Autocomplete -->
-    <div class="search-wrapper">
-      <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="input-search" class="search-input" placeholder="Ketik No. Gudang / Barcode..." autocomplete="off">
-      <div id="search-suggestions" class="search-dropdown-menu"></div>
-    </div>
-
-    <div class="nav-actions">
-      <button id="btn-toggle-2d-view" class="btn-pill">
-        <i class="fa-solid fa-table-cells" style="color: #38bdf8;"></i>
-        <span>Denah 2D</span>
-      </button>
-      <button id="btn-toggle-panel" class="btn-pill">
-        <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i>
-        <span>Filter & Stats</span>
-      </button>
-      <button id="btn-upload-excel" class="btn-pill desktop-only">
-        <i class="fa-solid fa-file-excel" style="color: #10b981;"></i>
-        <span>Import Excel</span>
-      </button>
-    </div>
+    <!-- Quickbar nested naturally below navbar (Never overlaps search) -->
+    <nav class="block-quickbar">
+      <button class="block-tab-btn active" data-block="all">Semua Blok</button>
+      <button class="block-tab-btn" data-block="1">Blok 01</button>
+      <button class="block-tab-btn" data-block="2">Blok 02</button>
+      <button class="block-tab-btn" data-block="3">Blok 03</button>
+      <button class="block-tab-btn" data-block="4">Blok 04</button>
+      <button class="block-tab-btn" data-block="5">Blok 05</button>
+      <button class="block-tab-btn" data-block="6">Blok 06</button>
+      <button class="block-tab-btn" data-block="7">Blok 07</button>
+      <button class="block-tab-btn" data-block="8">Blok 08</button>
+      <button class="block-tab-btn" data-block="9">Blok 09</button>
+      <button class="block-tab-btn" data-block="10">Blok 10</button>
+      <button class="block-tab-btn" data-block="11">Blok 11</button>
+      <button class="block-tab-btn" data-block="12">Blok 12</button>
+      <button class="block-tab-btn" data-block="13">Blok 13</button>
+      <button class="block-tab-btn" data-block="14">Blok 14</button>
+      <button class="block-tab-btn" data-block="15">Blok 15</button>
+      <button class="block-tab-btn" data-block="16">Blok 16</button>
+    </nav>
   </header>
 
   <!-- Full-Screen Interactive 2D Warehouse Blueprint Modal -->
@@ -100,26 +123,6 @@
     </div>
     <button id="close-hud-btn" class="finder-close-btn"><i class="fa-solid fa-xmark"></i></button>
   </div>
-
-  <nav class="block-quickbar">
-    <button class="block-tab-btn active" data-block="all">Semua Blok</button>
-    <button class="block-tab-btn" data-block="1">Blok 01</button>
-    <button class="block-tab-btn" data-block="2">Blok 02</button>
-    <button class="block-tab-btn" data-block="3">Blok 03</button>
-    <button class="block-tab-btn" data-block="4">Blok 04</button>
-    <button class="block-tab-btn" data-block="5">Blok 05</button>
-    <button class="block-tab-btn" data-block="6">Blok 06</button>
-    <button class="block-tab-btn" data-block="7">Blok 07</button>
-    <button class="block-tab-btn" data-block="8">Blok 08</button>
-    <button class="block-tab-btn" data-block="9">Blok 09</button>
-    <button class="block-tab-btn" data-block="10">Blok 10</button>
-    <button class="block-tab-btn" data-block="11">Blok 11</button>
-    <button class="block-tab-btn" data-block="12">Blok 12</button>
-    <button class="block-tab-btn" data-block="13">Blok 13</button>
-    <button class="block-tab-btn" data-block="14">Blok 14</button>
-    <button class="block-tab-btn" data-block="15">Blok 15</button>
-    <button class="block-tab-btn" data-block="16">Blok 16</button>
-  </nav>
 
   <!-- Mobile Overlay Backdrop -->
   <div id="panel-backdrop" class="panel-overlay"></div>
@@ -341,8 +344,8 @@
   </div>
 
   <!-- Embedded Warehouse Data for Zero-CORS standalone execution -->
-  <script src="warehouse_data.js?v=4.1"></script>
+  <script src="warehouse_data.js?v=4.2"></script>
   <!-- Application Logic with Cache Buster -->
-  <script src="app.js?v=4.1"></script>
+  <script src="app.js?v=4.2"></script>
 </body>
 </html>
