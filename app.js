@@ -775,9 +775,12 @@ function setupUIEventListeners() {
   }
 
   if (mBtnReset) {
-    mBtnReset.addEventListener('click', () => {
-      resetCameraOverview();
-    });
+    mBtnReset.addEventListener('click', resetAllUI);
+  }
+
+  const btnResetAll = document.getElementById('btn-reset-all');
+  if (btnResetAll) {
+    btnResetAll.addEventListener('click', resetAllUI);
   }
 
   // Close Location HUD Button
@@ -1276,6 +1279,79 @@ function setCameraPreset(preset) {
   } else if (preset === 'east') {
     smoothCameraFly(10, 12, -6, 10, 2, 4.8);
   }
+}
+
+function resetAllUI() {
+  // 1. Reset Camera to Centered Overview
+  resetCameraOverview();
+
+  // 2. Clear Search & Suggestions
+  const searchInput = document.getElementById('input-search');
+  if (searchInput) searchInput.value = '';
+  activeFilter.searchQuery = '';
+  const suggestionsBox = document.getElementById('search-suggestions');
+  if (suggestionsBox) {
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.classList.remove('show');
+  }
+
+  // 3. Hide Location Finder HUD Banner
+  hideLocationFinderHUD();
+
+  // 4. Clear Bale Selection & Laser Beacon
+  selectedBale = null;
+  removeBeacon();
+
+  // 5. Close All Drawers & Modals
+  const drawer = document.getElementById('inspector-drawer');
+  if (drawer) drawer.classList.remove('open');
+  const leftPanel = document.getElementById('left-panel');
+  if (leftPanel) leftPanel.classList.remove('open');
+  const panelBackdrop = document.getElementById('panel-backdrop');
+  if (panelBackdrop) panelBackdrop.classList.remove('active');
+  const denahModal = document.getElementById('denah-2d-modal');
+  if (denahModal) denahModal.classList.remove('show');
+  const uploadModal = document.getElementById('upload-modal');
+  if (uploadModal) uploadModal.classList.remove('show');
+
+  // 6. Reset Filters (Block, Grade, Layers, Explode, ColorMode)
+  activeFilter.block = 'all';
+  activeFilter.grade = 'all';
+  activeFilter.layers = { 1: true, 2: true, 3: true, 4: true };
+  activeFilter.explodeFactor = 0;
+  activeFilter.colorMode = 'grade';
+
+  // Update UI Inputs & Buttons
+  const blockSelect = document.getElementById('filter-block');
+  if (blockSelect) blockSelect.value = 'all';
+
+  const gradeSelect = document.getElementById('filter-grade');
+  if (gradeSelect) gradeSelect.value = 'all';
+
+  document.querySelectorAll('.block-tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-block') === 'all');
+  });
+
+  document.querySelectorAll('.layer-btn').forEach(b => {
+    b.classList.add('active');
+  });
+
+  const explodeSlider = document.getElementById('slider-explode');
+  if (explodeSlider) explodeSlider.value = 0;
+  const explodeVal = document.getElementById('explode-val');
+  if (explodeVal) explodeVal.innerText = '0x';
+  updateLayerExplosion();
+
+  document.querySelectorAll('.color-mode-pills .pill-option').forEach(p => {
+    p.classList.toggle('active', p.getAttribute('data-mode') === 'grade');
+  });
+
+  document.querySelectorAll('.cam-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-cam') === 'iso');
+  });
+
+  // 7. Re-apply Filters to Restore 100% Opacity and Materials
+  applyFilters();
 }
 
 function resetCameraOverview() {

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- App Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="style.css?v=4.2">
+  <link rel="stylesheet" href="style.css?v=4.3">
 
   <!-- Three.js & OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -253,6 +253,7 @@
     <button class="cam-btn" data-cam="front"><i class="fa-solid fa-eye"></i> Tampak Depan (Selatan)</button>
     <button class="cam-btn" data-cam="west"><i class="fa-solid fa-arrow-left"></i> Sisi Barat (Blok 1-8)</button>
     <button class="cam-btn" data-cam="east"><i class="fa-solid fa-arrow-right"></i> Sisi Timur (Blok 9-16)</button>
+    <button id="btn-reset-all" class="cam-btn" style="border-color: rgba(245, 158, 11, 0.4);"><i class="fa-solid fa-rotate-left" style="color: var(--accent-amber);"></i> Reset Semua UI</button>
   </div>
 
   <!-- Mobile Bottom Action Bar (Cepat & Praktis di HP) -->
@@ -260,7 +261,7 @@
     <button id="m-btn-denah" class="m-nav-btn"><i class="fa-solid fa-table-cells"></i><span>Denah 2D</span></button>
     <button id="m-btn-search" class="m-nav-btn highlight"><i class="fa-solid fa-magnifying-glass"></i><span>Cari Bal</span></button>
     <button id="m-btn-filter" class="m-nav-btn"><i class="fa-solid fa-sliders"></i><span>Menu Filter</span></button>
-    <button id="m-btn-reset" class="m-nav-btn"><i class="fa-solid fa-rotate-left"></i><span>Reset Cam</span></button>
+    <button id="m-btn-reset" class="m-nav-btn"><i class="fa-solid fa-rotate-left" style="color: var(--accent-amber);"></i><span>Reset Semua</span></button>
   </nav>
 
   <!-- Right Inspector Drawer (Detail Bal yang Diklik) -->
@@ -344,8 +345,8 @@
   </div>
 
   <!-- Embedded Warehouse Data for Zero-CORS standalone execution -->
-  <script src="warehouse_data.js?v=4.2"></script>
+  <script src="warehouse_data.js?v=4.3"></script>
   <!-- Application Logic with Cache Buster -->
-  <script src="app.js?v=4.2"></script>
+  <script src="app.js?v=4.3"></script>
 </body>
 </html>
