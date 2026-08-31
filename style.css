@@ -265,20 +265,32 @@ body {
 }
 .location-finder-card {
   position: absolute;
-  top: 86px;
+  bottom: 74px;
+  top: auto;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
   border: 2px solid var(--accent-emerald);
   border-radius: var(--radius-lg);
-  padding: 12px 22px;
+  padding: 10px 20px;
   display: none;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.35), 0 15px 35px rgba(0, 0, 0, 0.7);
-  z-index: 100;
+  z-index: 920;
   backdrop-filter: blur(16px);
-  animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .location-finder-card.show {
@@ -1133,6 +1145,14 @@ body {
 
   .camera-bar {
     bottom: 74px !important;
+  }
+
+  .location-finder-card {
+    bottom: 76px !important;
+    top: auto !important;
+    width: calc(100vw - 20px) !important;
+    padding: 8px 12px;
+    z-index: 960 !important;
   }
 }
 
