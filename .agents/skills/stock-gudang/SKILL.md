@@ -20,10 +20,8 @@ Skill ini menyediakan standar operasional prosedur, arsitektur data, fungsi help
 1. **Blok (1 s/d 16)**: Area penumpukan bal tembakau di gudang.
 2. **Saf (Kolom)**: Baris susunan dari sisi ke sisi.
    - Blok 01 – 05: 6 Saf
-   - Blok 06: 5 Saf
-   - Blok 07 – 10: 4 Saf
-   - Blok 11: 5 Saf (Saf 1 kosong di sisi utara)
-   - Blok 12 – 16: 6 Saf (Saf 1 & 2 kosong di sisi utara)
+   - Blok 06 – 10: 5 Saf
+   - Blok 11 – 16: 6 Saf
 3. **Tingkat (7 Tingkat Kapasitas)**:
    - `T7 (Atas)`: Slot kosong (disiapkan untuk bal baru)
    - `T6`: Slot kosong
