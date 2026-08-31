@@ -7,6 +7,17 @@ from openpyxl.worksheet.pagebreak import Break
 # ==============================================================================
 # 1. LOAD MASTER DATABASE (DOKUMEN REKAP NO GUD, BARKOT, GRADE, KG)
 # ==============================================================================
+def is_valid_barcode(b):
+    if b is None:
+        return False
+    s = str(b).strip()
+    # Barcode harus memiliki digit/angka dan bukan status OUT/None/-/?
+    if not any(c.isdigit() for c in s):
+        return False
+    if s.lower() in ['out', 'none', '-', '', 'null']:
+        return False
+    return True
+
 def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
     master_dict = {}
     if not os.path.exists(master_filepath):
@@ -16,10 +27,11 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
     wb_master = openpyxl.load_workbook(master_filepath, data_only=True)
     
     def update_entry(no_gud, barkot, grade, kg, status, ket):
-        if no_gud is None:
+        if no_gud is None or str(no_gud).strip() == '':
             return
         k = str(no_gud).strip()
-        b_str = '' if barkot in [None, '', '-', ''] else str(barkot).strip()
+        has_new_barkot = is_valid_barcode(barkot)
+        b_str = str(barkot).strip() if has_new_barkot else ''
         kg_val = '' if kg in [None, '', '-'] else kg
         grade_str = '' if grade in [None, '', '-'] else str(grade).strip()
         status_str = '' if status in [None, '', '-'] else str(status).strip()
@@ -35,11 +47,24 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
                 'ket': ket_str
             }
         else:
-            # Jika data baru memiliki nomor barcode valid, utamakan data valid
-            if b_str and not master_dict[k]['barkot']:
+            has_old_barkot = is_valid_barcode(master_dict[k].get('barkot'))
+            # Aturan:
+            # 1. Jika data baru (tanggal selanjutnya) memiliki barcode valid -> otomatis timpa data lama.
+            # 2. Jika data baru TIDAK ada barcode (misal OUT/kosong), tapi data lama SUDAH punya barcode -> pertahankan barcode lama!
+            # 3. Jika dua-duanya belum punya barcode -> perbarui atribut status/grade/kg jika ada.
+            if has_new_barkot:
                 master_dict[k] = {
                     'no_gud': no_gud,
                     'barkot': b_str,
+                    'grade': grade_str or master_dict[k]['grade'],
+                    'kg': kg_val if kg_val != '' else master_dict[k]['kg'],
+                    'status': 'SELESAI' if status_str != 'OUT' else master_dict[k]['status'],
+                    'ket': ket_str or master_dict[k]['ket']
+                }
+            elif not has_old_barkot:
+                master_dict[k] = {
+                    'no_gud': no_gud,
+                    'barkot': '',
                     'grade': grade_str or master_dict[k]['grade'],
                     'kg': kg_val if kg_val != '' else master_dict[k]['kg'],
                     'status': status_str or master_dict[k]['status'],
@@ -47,9 +72,8 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
                 }
 
     # 1. Baca dari sheet harian (21 s/d 30 Agustus)
-    for sname in wb_master.sheetnames:
-        if sname in ['Semua Data (Master)', 'Ringkasan Per Tanggal']:
-            continue
+    daily_sheets = [s for s in wb_master.sheetnames if s not in ['Semua Data (Master)', 'Ringkasan Per Tanggal']]
+    for sname in daily_sheets:
         ws = wb_master[sname]
         for r in range(5, ws.max_row + 1):
             update_entry(ws.cell(r, 2).value, ws.cell(r, 3).value, ws.cell(r, 4).value, ws.cell(r, 5).value, ws.cell(r, 6).value, ws.cell(r, 7).value)

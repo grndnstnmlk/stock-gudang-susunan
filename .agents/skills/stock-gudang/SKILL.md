@@ -50,6 +50,12 @@ Data nomor bal fisik di gudang merepresentasikan **No Gudang (No Gud)** yang dic
 
 ### Logika Smart Loader:
 ```python
+def is_valid_barcode(b):
+    if b is None:
+        return False
+    s = str(b).strip()
+    return any(c.isdigit() for c in s) and s.lower() not in ['out', 'none', '-', '']
+
 def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
     master_dict = {}
     wb_master = openpyxl.load_workbook(master_filepath, data_only=True)
@@ -58,50 +64,29 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
         if no_gud is None:
             return
         k = str(no_gud).strip()
-        b_str = '' if barkot in [None, '', '-', ''] else str(barkot).strip()
-        kg_val = '' if kg in [None, '', '-'] else kg
-        grade_str = '' if grade in [None, '', '-'] else str(grade).strip()
-        status_str = '' if status in [None, '', '-'] else str(status).strip()
+        has_new = is_valid_barcode(barkot)
+        b_str = str(barkot).strip() if has_new else ''
 
         if k not in master_dict:
-            master_dict[k] = {
-                'no_gud': no_gud,
-                'barkot': b_str,
-                'grade': grade_str,
-                'kg': kg_val,
-                'status': status_str,
-                'ket': str(ket or '').strip()
-            }
+            master_dict[k] = {'no_gud': no_gud, 'barkot': b_str, 'grade': grade, 'kg': kg, 'status': status, 'ket': ket}
         else:
-            # Utamakan record dengan barcode valid (bukan status OUT)
-            if b_str and not master_dict[k]['barkot']:
-                master_dict[k] = {
-                    'no_gud': no_gud,
-                    'barkot': b_str,
-                    'grade': grade_str or master_dict[k]['grade'],
-                    'kg': kg_val if kg_val != '' else master_dict[k]['kg'],
-                    'status': status_str or master_dict[k]['status'],
-                    'ket': str(ket or '').strip()
-                }
+            # 1. Timpa otomatis jika di tanggal selanjutnya ada barcode valid
+            # 2. Pertahankan barcode lama jika di tanggal baru tidak ada barcode
+            if has_new:
+                master_dict[k] = {'no_gud': no_gud, 'barkot': b_str, 'grade': grade or master_dict[k]['grade'], 'kg': kg if kg != '' else master_dict[k]['kg'], 'status': 'SELESAI' if status != 'OUT' else status, 'ket': ket}
+            elif not is_valid_barcode(master_dict[k].get('barkot')):
+                master_dict[k] = {'no_gud': no_gud, 'barkot': '', 'grade': grade or master_dict[k]['grade'], 'kg': kg if kg != '' else master_dict[k]['kg'], 'status': status, 'ket': ket}
 
-    # Baca sheet harian & master
-    for sname in wb_master.sheetnames:
-        if sname not in ['Semua Data (Master)', 'Ringkasan Per Tanggal']:
-            ws = wb_master[sname]
-            for r in range(5, ws.max_row + 1):
-                update_entry(ws.cell(r, 2).value, ws.cell(r, 3).value, ws.cell(r, 4).value, ws.cell(r, 5).value, ws.cell(r, 6).value, ws.cell(r, 7).value)
+    # Baca sheet harian & master secara kronologis
+    for sname in [s for s in wb_master.sheetnames if s not in ['Semua Data (Master)', 'Ringkasan Per Tanggal']]:
+        ws = wb_master[sname]
+        for r in range(5, ws.max_row + 1):
+            update_entry(ws.cell(r, 2).value, ws.cell(r, 3).value, ws.cell(r, 4).value, ws.cell(r, 5).value, ws.cell(r, 6).value, ws.cell(r, 7).value)
 
     if 'Semua Data (Master)' in wb_master.sheetnames:
         ws_m = wb_master['Semua Data (Master)']
         for r in range(5, ws_m.max_row + 1):
             update_entry(ws_m.cell(r, 3).value, ws_m.cell(r, 4).value, ws_m.cell(r, 5).value, ws_m.cell(r, 6).value, ws_m.cell(r, 7).value, ws_m.cell(r, 8).value)
-
-    # Custom Override untuk koreksi manual spesifik
-    custom_overrides = {
-        '259': {'no_gud': 259, 'barkot': '30164', 'grade': '55', 'kg': 55, 'status': 'SELESAI', 'ket': ''},
-    }
-    for k, v in custom_overrides.items():
-        master_dict[k] = v
 
     return master_dict
 ```
