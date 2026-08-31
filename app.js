@@ -617,6 +617,27 @@ function populateFilterOptions(gradeCounts) {
 }
 
 function setupUIEventListeners() {
+  // Mobile Panel Toggle & Close
+  const togglePanelBtn = document.getElementById('btn-toggle-panel');
+  const closePanelBtn = document.getElementById('btn-close-panel');
+  const panelBackdrop = document.getElementById('panel-backdrop');
+  const leftPanel = document.getElementById('left-panel');
+
+  if (togglePanelBtn && leftPanel) {
+    togglePanelBtn.addEventListener('click', () => {
+      leftPanel.classList.add('open');
+      if (panelBackdrop) panelBackdrop.classList.add('active');
+    });
+  }
+
+  function closeMobilePanel() {
+    if (leftPanel) leftPanel.classList.remove('open');
+    if (panelBackdrop) panelBackdrop.classList.remove('active');
+  }
+
+  if (closePanelBtn) closePanelBtn.addEventListener('click', closeMobilePanel);
+  if (panelBackdrop) panelBackdrop.addEventListener('click', closeMobilePanel);
+
   // Color Mode selection
   document.querySelectorAll('.color-mode-pills .pill-option').forEach(pill => {
     pill.addEventListener('click', (e) => {

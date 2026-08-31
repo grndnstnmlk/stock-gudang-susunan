@@ -802,6 +802,41 @@ body {
 }
 
 /* ==============================================================================
+   DESKTOP DEFAULT & MOBILE DRAWER STYLING
+   ============================================================================== */
+.panel-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+}
+
+.panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 990;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.panel-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+#btn-toggle-panel {
+  display: none;
+}
+
+/* ==============================================================================
    MOBILE & IPHONE 16 PRO MAX RESPONSIVE OPTIMIZATION
    ============================================================================== */
 #canvas-container {
@@ -809,37 +844,98 @@ body {
 }
 
 @media (max-width: 1024px) {
+  #btn-toggle-panel {
+    display: inline-flex;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Compact Single-Row Mobile Header */
   .top-navbar {
+    top: 10px;
+    left: 10px;
+    right: 10px;
     height: auto;
-    padding: 10px 14px;
+    padding: 8px 12px;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .search-wrapper {
-    width: 100%;
-    order: 3;
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
   }
 
   .brand-title {
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 700;
   }
 
   .brand-subtitle {
     display: none;
   }
 
+  .search-wrapper {
+    width: 100%;
+    order: 3;
+    margin-top: 2px;
+  }
+
+  .search-input {
+    padding: 8px 14px 8px 34px;
+    font-size: 12px;
+  }
+
+  /* Quickbar Positioned Cleanly Under Navbar */
   .block-quickbar {
-    top: 110px;
-    max-width: 95vw;
+    top: 108px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
+    padding: 4px 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .block-tab-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* Off-Canvas Left Control Drawer (Hidden by default, slides in when requested) */
+  .panel-mobile-header {
+    display: flex;
   }
 
   .left-controls-panel {
-    top: 155px;
-    width: 280px;
-    max-height: 48vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 86vw;
+    max-width: 340px;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0 20px 20px 0;
+    z-index: 1000;
+    transform: translateX(-120%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.8);
+    background: var(--bg-card);
   }
 
+  .left-controls-panel.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Mobile Bottom Sheet for Inspector */
   .inspector-drawer {
     top: auto;
     bottom: 0;
@@ -847,18 +943,20 @@ body {
     right: 0;
     width: 100vw;
     border-radius: 20px 20px 0 0;
-    max-height: 65vh;
+    max-height: 70vh;
     overflow-y: auto;
     transform: translateY(100%);
+    z-index: 1000;
   }
 
   .inspector-drawer.open {
     transform: translateY(0);
   }
 
+  /* Mobile Camera Bar */
   .camera-bar {
-    bottom: 12px;
-    max-width: 95vw;
+    bottom: 14px;
+    max-width: calc(100vw - 20px);
     overflow-x: auto;
     padding: 4px 8px;
     -webkit-overflow-scrolling: touch;
@@ -866,24 +964,37 @@ body {
 
   .cam-btn {
     padding: 5px 8px;
-    font-size: 11px;
+    font-size: 10px;
     white-space: nowrap;
   }
 
   .location-finder-card {
-    top: 155px;
-    width: 90vw;
-    padding: 10px 14px;
+    top: 150px;
+    width: calc(100vw - 24px);
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .finder-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
   }
 
   .finder-coords {
-    font-size: 13px;
+    font-size: 12px;
+    gap: 4px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .stat-box {
+    padding: 8px 10px;
   }
 
   .stat-value {
