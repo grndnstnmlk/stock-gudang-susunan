@@ -325,7 +325,7 @@ function buildWarehouse3D(rawData) {
         if (!noGudStr) return;
 
         // Lookup master metadata
-        let masterInfo = master[noGudStr] || master[noGudStr.lstrip?.('0') || noGudStr];
+        let masterInfo = master[noGudStr] || master[noGudStr.replace(/^0+/, '') || noGudStr];
         let barkot = masterInfo?.barkot || '-';
         let kg = masterInfo?.kg !== undefined && masterInfo?.kg !== '' ? masterInfo.kg : '-';
         let grade = masterInfo?.grade || 'UNGRADED';
@@ -388,15 +388,6 @@ function buildWarehouse3D(rawData) {
   populateFilterOptions(gradeCounts);
 }
 
-// Realistic Tobacco Bale Texture Generator & Cache
-const baleTextureCache = {};
-
-function getBaleCanvasTexture(baleData, colorMode) {
-  const cacheKey = `${baleData.noGud}_${baleData.grade}_${colorMode}`;
-  if (baleTextureCache[cacheKey]) return baleTextureCache[cacheKey];
-
-  const canvas = document.createElement('canvas');
-  canvas.width = 256;
 // Realistic Tobacco Bale Texture Generator & Cache (High DPI & Big Sharp Numbers)
 const baleTextureCache = {};
 
