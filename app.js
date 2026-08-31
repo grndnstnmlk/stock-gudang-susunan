@@ -118,9 +118,10 @@ function initThree() {
   // Resize handler
   window.addEventListener('resize', onWindowResize);
   
-  // Interaction handlers
+  // Interaction handlers (Support both desktop mouse & mobile touch tap)
   renderer.domElement.addEventListener('mousemove', onMouseMove);
-  renderer.domElement.addEventListener('click', onMouseClick);
+  renderer.domElement.addEventListener('pointerdown', onPointerDown);
+  renderer.domElement.addEventListener('pointerup', onPointerUp);
 }
 
 function createWarehouseEnvironment() {
@@ -849,9 +850,36 @@ function highlightFirstSearchMatch(query) {
 }
 
 // ==============================================================================
-// 4. RAYCASTING, BEACON & INTERACTIVE INSPECTOR
+// 4. RAYCASTING, TOUCH TAP & INTERACTIVE INSPECTOR
 // ==============================================================================
 let beaconMesh = null;
+let pointerDownPos = { x: 0, y: 0 };
+
+function onPointerDown(event) {
+  pointerDownPos.x = event.clientX;
+  pointerDownPos.y = event.clientY;
+}
+
+function onPointerUp(event) {
+  // Hanya proses jika bukan gerakan drag/orbit (jarak gerak < 10px)
+  const dist = Math.hypot(event.clientX - pointerDownPos.x, event.clientY - pointerDownPos.y);
+  if (dist > 10) return;
+
+  // Lakukan raycast langsung dari koordinat tap/klik layar
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const visibleMeshes = baleMeshes.filter(m => m.visible);
+  const intersects = raycaster.intersectObjects(visibleMeshes, false);
+
+  if (intersects.length > 0) {
+    const hitMesh = intersects[0].object;
+    if (hitMesh && hitMesh.userData && hitMesh.userData.id) {
+      selectBale(hitMesh.userData, hitMesh);
+    }
+  }
+}
 
 function onMouseMove(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -868,8 +896,8 @@ function onMouseMove(event) {
     hoveredBale = hitMesh.userData;
     document.body.style.cursor = 'pointer';
 
-    // Show floating tooltip
-    if (tooltip) {
+    // Show floating tooltip (hanya di desktop/mouse)
+    if (tooltip && window.innerWidth > 1024) {
       tooltip.innerHTML = `
         <div style="font-weight:700; color:#38bdf8;">No. Gudang: ${hoveredBale.noGud}</div>
         <div style="font-size:11px; color:#cbd5e1;">Grade: <b>${hoveredBale.grade}</b> | ${hoveredBale.kg} kg</div>
@@ -883,13 +911,6 @@ function onMouseMove(event) {
     hoveredBale = null;
     document.body.style.cursor = 'default';
     if (tooltip) tooltip.style.opacity = '0';
-  }
-}
-
-function onMouseClick(event) {
-  if (hoveredBale) {
-    const targetMesh = baleMeshes.find(m => m.userData.id === hoveredBale.id);
-    selectBale(hoveredBale, targetMesh);
   }
 }
 
