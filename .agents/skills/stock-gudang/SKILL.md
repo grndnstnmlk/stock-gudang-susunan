@@ -21,7 +21,9 @@ Skill ini menyediakan standar operasional prosedur, arsitektur data, fungsi help
 2. **Saf (Kolom)**: Baris susunan dari sisi ke sisi.
    - Blok 01 – 05: 6 Saf
    - Blok 06: 5 Saf
-   - Blok 07 – 16: 4 Saf
+   - Blok 07 – 10: 4 Saf
+   - Blok 11: 5 Saf (Saf 1 kosong di sisi utara)
+   - Blok 12 – 16: 6 Saf (Saf 1 & 2 kosong di sisi utara)
 3. **Tingkat (7 Tingkat Kapasitas)**:
    - `T7 (Atas)`: Slot kosong (disiapkan untuk bal baru)
    - `T6`: Slot kosong
@@ -37,6 +39,8 @@ Skill ini menyediakan standar operasional prosedur, arsitektur data, fungsi help
   - `BLOK 01 (Saf 1 Utara - Saf 6 Selatan)`
   - `BLOK 06 (Saf 1 Utara - Saf 5 Selatan)`
   - `BLOK 07 (Saf 1 Utara - Saf 4 Selatan)`
+  - `BLOK 11 (Saf 1 Utara - Saf 5 Selatan)`
+  - `BLOK 12 (Saf 1 Utara - Saf 6 Selatan)`
 
 ---
 
@@ -112,7 +116,7 @@ Spreadsheet yang dihasilkan (`Stock_Susunan_Bal_*.xlsx` dan `c.xlsx`) harus meny
 - **Tujuan**: Tampilan visual lengkap operasional gudang.
 - **Layout per Saf**: Setiap Saf memiliki 3 sub-kolom: `No Gud` | `Barkot` | `Kg`.
 - **Page Break Budgeting (A4 Landscape)**:
-  - **Halaman 1**: 2 Tabel (Blok 01 & 02) + Judul Utama (`STOCK TEMBAKAU DJARUM`) + Tanggal.
+  - **Halaman 1**: 2 Tabel (Blok 01 & 02) + Judul Utama (`STOCK GUDANG DJARUM`) + Tanggal.
   - **Halaman 2 s/d 5**: Masing-masing tepat **3 Tabel** per lembar.
   - **Halaman 6**: 2 Tabel terakhir (Blok 15 & 16).
   - Page break ditambahkan pada blok: `[2, 5, 8, 11, 14]`.

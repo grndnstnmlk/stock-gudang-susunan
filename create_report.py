@@ -78,14 +78,24 @@ def lookup_bal_info(val):
     if s in master_bal_dict:
         m = master_bal_dict[s]
         return val, m['barkot'], m['kg'], m['grade']
+    s_clean = s.lstrip('0')
+    if s_clean and s_clean in master_bal_dict:
+        m = master_bal_dict[s_clean]
+        return val, m['barkot'], m['kg'], m['grade']
     if '/' in s:
         parts = [p.strip() for p in s.split('/')]
         barkots = []
         kgs = []
         grades = []
         for p in parts:
+            p_clean = p.lstrip('0') if p.lstrip('0') in master_bal_dict else p
             if p in master_bal_dict:
                 m = master_bal_dict[p]
+            elif p_clean in master_bal_dict:
+                m = master_bal_dict[p_clean]
+            else:
+                m = None
+            if m:
                 if m['barkot']: barkots.append(m['barkot'])
                 if m['kg'] != '': kgs.append(str(m['kg']))
                 if m['grade']: grades.append(m['grade'])
@@ -100,160 +110,160 @@ blocks_data = {
         "title": "BLOK 01",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [494, 497, 453, 474, 116, 310],
-            [283, 23, 467, 509, 177, 193],
-            [508, 214, 460, 462, 110, 123],
-            [305, 18, 133, 144, 234, 274],
+            [305, 18, 133, 144, 234, 274], # T4 (Atas)
+            [508, 214, 460, 462, 110, 123], # T3
+            [283, 23, 467, 509, 177, 193],  # T2
+            [494, 497, 453, 474, 116, 310], # T1 (Dasar)
         ]
     },
     2: {
         "title": "BLOK 02",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [164, 288, 15, 227, 416, 99],
-            [183, 368, 160, 491, 469, 504],
-            [493, 439, 438, 98, 171, 124],
-            [125, 444, 158, 448, 108, 112],
+            [125, 444, 158, 448, 108, 112], # T4 (Atas)
+            [493, 439, 438, 98, 171, 124],  # T3
+            [183, 368, 160, 491, 469, 504], # T2
+            [164, 288, 15, 227, 416, 99],   # T1 (Dasar)
         ]
     },
     3: {
         "title": "BLOK 03",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [408, 465, 296, 421, 463, 206],
-            [222, 217, 502, 440, 487, 107],
-            [180, 473, 432, 456, 282, 91],
-            [230, 199, 503, 495, 32, 437],
+            [230, 199, 503, 495, 32, 437],  # T4 (Atas)
+            [180, 473, 432, 456, 282, 91],  # T3
+            [222, 217, 502, 440, 487, 107], # T2
+            [408, 465, 296, 421, 463, 206], # T1 (Dasar)
         ]
     },
     4: {
         "title": "BLOK 04",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [466, 447, 431, 277, 496, 468],
-            [498, 501, 130, 489, 115, 19],
-            [500, 436, 475, 201, 399, 111],
-            [100, 492, 226, 506, 374, 370],
+            [100, 492, 226, 506, 374, 370], # T4 (Atas)
+            [500, 436, 475, 201, 399, 111], # T3
+            [498, 501, 130, 489, 115, 19],  # T2
+            [466, 447, 431, 277, 496, 468], # T1 (Dasar)
         ]
     },
     5: {
         "title": "BLOK 05",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [499, 210, 309, 373, 332, 405],
-            [381, 224, 397, 245, 413, 272],
-            [257, 386, 246, 241, 313, 260],
-            [412, 430, 451, 490, 109, 4],
+            [412, 430, 451, 490, 109, 4],   # T4 (Atas)
+            [257, 386, 246, 241, 313, 260], # T3
+            [381, 224, 397, 245, 413, 272], # T2
+            [499, 210, 309, 373, 332, 405], # T1 (Dasar)
         ]
     },
     6: {
         "title": "BLOK 06",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
         "data": [
-            [211, 258, 433, 398, 122],
-            [423, 389, 365, 263, 458],
-            [472, 334, 315, 387, 103],
-            [388, 367, 349, 336, 300],
+            [388, 367, 349, 336, 300], # T4 (Atas)
+            [472, 334, 315, 387, 103], # T3
+            [423, 389, 365, 263, 458], # T2
+            [211, 258, 433, 398, 122], # T1 (Dasar)
         ]
     },
     7: {
         "title": "BLOK 07",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
         "data": [
-            [320, 384, 371, 352],
-            [377, 326, 339, 375],
-            [380, 350, 330, 329],
-            [318, 427, 395, 311],
+            [318, 427, 395, 311], # T4 (Atas)
+            [380, 350, 330, 329], # T3
+            [377, 326, 339, 375], # T2
+            [320, 384, 371, 352], # T1 (Dasar)
         ]
     },
     8: {
         "title": "BLOK 08",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
         "data": [
-            [325, 379, 324, 385],
-            [425, 369, 383, 393],
-            [340, 382, 333, 265],
-            [267, 271, 90, 341],
+            [267, 271, 90, 341],  # T4 (Atas)
+            [340, 382, 333, 265], # T3
+            [425, 369, 383, 393], # T2
+            [325, 379, 324, 385], # T1 (Dasar)
         ]
     },
     9: {
         "title": "BLOK 09",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
         "data": [
-            [321, 415, 434, 278],
-            [275, 197, 331, 396],
-            [419, 424, 254, 378],
-            [418, 426, 337, 323],
+            [418, 426, 337, 323], # T4 (Atas)
+            [419, 424, 254, 378], # T3
+            [275, 197, 331, 396], # T2
+            [321, 415, 434, 278], # T1 (Dasar)
         ]
     },
     10: {
         "title": "BLOK 10",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
         "data": [
-            [421, 351, 255, 392],
-            [400, 390, 328, 366],
-            [420, 358, 50, 406],
-            [488, 344, 428, 470],
+            [488, 344, 428, 470], # T4 (Atas)
+            [420, 358, 50, 406],  # T3
+            [400, 390, 328, 366], # T2
+            [421, 351, 255, 392], # T1 (Dasar)
         ]
     },
     11: {
         "title": "BLOK 11",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
         "data": [
-            [289, 410, 357, 404],
-            [422, 347, 327, 355],
-            [154, 505, 259, 228],
-            [247, 414, 346, 338],
+            ["",  247, 414, 346, 338], # T4 (Atas)
+            [565, 154, 505, 259, 228], # T3
+            [567, 422, 347, 327, 355], # T2
+            [534, 289, 410, 357, 404], # T1 (Dasar)
         ]
     },
     12: {
         "title": "BLOK 12",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [394, 322, 335, 264],
-            [312, 316, 407, 231],
-            [445, 403, 361, 455],
-            [342, 169, 216, 459],
+            [517, 208, 342, 169, 216, 459], # T4 (Atas)
+            [519, 529, 445, 403, 361, 455], # T3
+            [30,  528, 312, 316, 407, 231], # T2
+            [512, 545, 394, 322, 335, 264], # T1 (Dasar)
         ]
     },
     13: {
         "title": "BLOK 13",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [173, 409, 442, 429],
-            [140, 141, 178, 401],
-            [233, 461, 446, 132],
-            [63, 168, 372, 402],
+            [535, 531, 63,  168, 372, 402], # T4 (Atas)
+            [527, 533, 233, 461, 446, 132], # T3
+            [126, 16,  140, 141, 178, 401], # T2
+            ["08", 541, 173, 409, 442, 429], # T1 (Dasar)
         ]
     },
     14: {
         "title": "BLOK 14",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [450, 256, 376, 175],
-            [49, 411, 319, 452],
-            [219, 232, 454, 457],
-            [273, 449, 441, 181],
+            [532, 571, 273, 449, 441, 181], # T4 (Atas)
+            [482, 13,  219, 232, 454, 457], # T3
+            [526, 308, 49,  411, 319, 452], # T2
+            [522, 543, 450, 256, 376, 175], # T1 (Dasar)
         ]
     },
     15: {
         "title": "BLOK 15",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [179, 574, 150, 343],
-            [559, 572, 356, 285],
-            [575, 223, 220, 435],
-            [276, 564, 149, 443],
+            [525, 537, 276, 564, 149, 443], # T4 (Atas)
+            [521, 536, 575, 223, 220, 435], # T3
+            [481, 566, 559, 572, 356, 285], # T2
+            ["03", 553, 179, 574, 150, 343], # T1 (Dasar)
         ]
     },
     16: {
         "title": "BLOK 16",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [546, 573, 64, 560],
-            [547, 554, 540, 538],
-            [542, 557, 544, 561],
-            [555, 558, 549, 307],
+            [113, 552, 555, 558, 549, 307], # T4 (Atas)
+            [480, 548, 542, 557, 544, 561], # T3
+            [523, 539, 547, 554, 540, 538], # T2
+            [524, 551, 546, 573, 64, 560],  # T1 (Dasar)
         ]
     },
 }
@@ -283,7 +293,9 @@ font_subhdr_tiny = Font(name='Segoe UI', size=9, bold=True, color='333333')
 font_subhdr = Font(name='Segoe UI', size=11, bold=True, color='000000')
 
 def format_kg_display(kg_val):
-    if kg_val is None or kg_val == '' or kg_val == '-':
+    if kg_val is None or kg_val == '':
+        return ''
+    if kg_val == '-':
         return '-'
     s = str(kg_val).strip()
     if '/' in s:
@@ -336,7 +348,7 @@ ws_full.views.sheetView[0].showGridLines = True
 configure_a4_print(ws_full, orientation='landscape', fit_w=1, fit_h=0)
 
 # Title & Date
-ws_full['B2'] = 'STOCK TEMBAKAU DJARUM'
+ws_full['B2'] = 'STOCK GUDANG DJARUM'
 ws_full['B2'].font = font_main_title
 ws_full['B2'].alignment = align_left
 ws_full.row_dimensions[2].height = 20
@@ -485,7 +497,7 @@ ws_portrait = wb.create_sheet(title='Stock Ringkas (No Gud Saja)')
 ws_portrait.views.sheetView[0].showGridLines = True
 configure_a4_print(ws_portrait, orientation='portrait', fit_w=1, fit_h=4)
 
-ws_portrait['B2'] = 'STOCK TEMBAKAU DJARUM'
+ws_portrait['B2'] = 'STOCK GUDANG DJARUM'
 ws_portrait['B2'].font = font_main_title
 ws_portrait['B2'].alignment = align_left
 ws_portrait.row_dimensions[2].height = 20
@@ -579,7 +591,7 @@ ws2 = wb.create_sheet(title='Format Grid (c.xlsx)')
 ws2.views.sheetView[0].showGridLines = True
 configure_a4_print(ws2, orientation='landscape', fit_w=1, fit_h=4)
 
-ws2['A2'] = 'STOCK TEMBAKAU DJARUM'
+ws2['A2'] = 'STOCK GUDANG DJARUM'
 ws2['A2'].font = font_main_title
 ws2['A3'] = 'Minggu 30/8/2026'
 ws2['A3'].font = font_subtitle
@@ -649,7 +661,7 @@ ws3 = wb.create_sheet(title='Rekapitulasi & Cari Bal')
 ws3.views.sheetView[0].showGridLines = True
 configure_a4_print(ws3, orientation='landscape', fit_w=1, fit_h=0)
 
-ws3['B2'] = 'STOCK TEMBAKAU DJARUM'
+ws3['B2'] = 'STOCK GUDANG DJARUM'
 ws3['B2'].font = font_main_title
 ws3['B3'] = 'REKAPITULASI STOCK & DATABASE PENCARIAN BAL'
 ws3['B3'].font = font_subtitle
@@ -676,8 +688,8 @@ for b_num in range(1, 17):
     b = blocks_data[b_num]
     num_saf = len(b["headers"])
     kap_blok = num_saf * 7
-    terisi_blok = num_saf * 4
-    kosong_blok = num_saf * 3
+    terisi_blok = sum(1 for row in b["data"] for val in row if val not in [None, ''])
+    kosong_blok = kap_blok - terisi_blok
     arah_text = f"Saf 1 Utara - Saf {num_saf} Selatan"
     
     # Hitung total kg blok
@@ -752,6 +764,8 @@ for b_num in range(1, 17):
     for t_row_idx, (t_num, t_desc) in enumerate(tier_order):
         row_vals = b["data"][t_row_idx]
         for c_idx, val in enumerate(row_vals):
+            if val in [None, '']:
+                continue
             r_row += 1
             saf_name = b["headers"][c_idx]
             no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val)
