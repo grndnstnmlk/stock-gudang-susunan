@@ -69,8 +69,8 @@ function initThree() {
   const container = document.getElementById('canvas-container');
   
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0b0f19);
-  scene.fog = new THREE.FogExp2(0x0b0f19, 0.002);
+  scene.background = new THREE.Color(0x12130f); // Midnight Carbon
+  scene.fog = new THREE.FogExp2(0x12130f, 0.002);
 
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 1000);
   camera.position.set(0, 20, -18);
@@ -90,11 +90,11 @@ function initThree() {
   controls.maxDistance = 180;
   controls.target.set(0, 2, 4.8);
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+  // Lighting - Max Yinger Theme: Bone-white main light & soft Rose Quartz Bloom edge glow
+  const ambientLight = new THREE.AmbientLight(0xe4dfda, 0.7);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+  const dirLight = new THREE.DirectionalLight(0xe4dfda, 0.85);
   dirLight.position.set(30, 45, 25);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize.width = 2048;
@@ -108,7 +108,8 @@ function initThree() {
   dirLight.shadow.camera.bottom = -d;
   scene.add(dirLight);
 
-  const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.35);
+  // Soft Rose Quartz Bloom edge lighting bleed (#f5c2c8)
+  const fillLight = new THREE.DirectionalLight(0xf5c2c8, 0.4);
   fillLight.position.set(-30, 25, -25);
   scene.add(fillLight);
 
@@ -129,20 +130,20 @@ function createWarehouseEnvironment() {
   const whWidth = 50;   // Barat - Timur
   const whDepth = 26;   // Utara - Selatan
 
-  // 1. Concrete Dark Tech Floor
+  // 1. Concrete Dark Tech Floor (Midnight Carbon)
   const floorGeo = new THREE.PlaneGeometry(whWidth + 16, whDepth + 16);
   const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x0a0f1d,
-    roughness: 0.8,
-    metalness: 0.2
+    color: 0x12130f,
+    roughness: 0.85,
+    metalness: 0.15
   });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  // Clean Grid Floor
-  const gridHelper = new THREE.GridHelper(whWidth + 16, 48, 0x38bdf8, 0x1e293b);
+  // Clean Grid Floor (Charcoal Vein)
+  const gridHelper = new THREE.GridHelper(whWidth + 16, 48, 0x3c3c38, 0x1e1f1c);
   gridHelper.position.y = 0.01;
   scene.add(gridHelper);
 
@@ -156,7 +157,7 @@ function createWarehouseEnvironment() {
 function createZoneMarkings(w, d) {
   // Garis Marka Lantai Pembatas Zona
   const lineGeo = new THREE.PlaneGeometry(w - 4, 0.12);
-  const lineMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide });
+  const lineMat = new THREE.MeshBasicMaterial({ color: 0x3c3c38, side: THREE.DoubleSide });
   const line = new THREE.Mesh(lineGeo, lineMat);
   line.rotation.x = -Math.PI / 2;
   line.position.set(0, 0.02, -0.6);
@@ -164,9 +165,9 @@ function createZoneMarkings(w, d) {
 
   // Label Lantai Flat Area Lorong Utara
   const aislePlane = createFloorTextPlane("◄ AREA LORONG UTAMA (AKSES JALAN GUDANG) ►", 16, 1.0, {
-    bgColor: 'rgba(15, 23, 42, 0.4)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    textColor: '#64748b',
+    bgColor: 'rgba(18, 19, 15, 0.6)',
+    borderColor: '#3c3c38',
+    textColor: 'rgba(228, 223, 218, 0.5)',
     fontSize: 26
   });
   aislePlane.position.set(0, 0.03, -5.5);
@@ -174,9 +175,9 @@ function createZoneMarkings(w, d) {
 
   // Label Lantai Flat Area Tumpukan Bal Selatan
   const stockPlane = createFloorTextPlane("◄ ZONA TUMPUKAN BAL STOCK (16 BLOK) ►", 16, 1.0, {
-    bgColor: 'rgba(15, 23, 42, 0.4)',
-    borderColor: 'rgba(56, 189, 248, 0.2)',
-    textColor: '#38bdf8',
+    bgColor: 'rgba(18, 19, 15, 0.6)',
+    borderColor: '#3c3c38',
+    textColor: '#e4dfda',
     fontSize: 26
   });
   stockPlane.position.set(0, 0.03, 0.4);
