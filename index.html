@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>3D Digital Twin Stock Gudang Tembakau (16 Blok)</title>
-  
+
   <!-- Modern Font: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- FontAwesome / Icon Library CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- App Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="style.css?v=4.7">
+  <link rel="stylesheet" href="style.css?v=4.9">
 
   <!-- Three.js & OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -22,6 +25,7 @@
   <!-- SheetJS for Excel Reading -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
+
 <body>
 
   <!-- 3D Canvas Viewport -->
@@ -66,25 +70,40 @@
       </div>
     </div>
 
-    <!-- Quickbar nested naturally below navbar (Never overlaps search) -->
-    <nav class="block-quickbar">
-      <button class="block-tab-btn active" data-block="all">Semua Blok</button>
-      <button class="block-tab-btn" data-block="1">Blok 01</button>
-      <button class="block-tab-btn" data-block="2">Blok 02</button>
-      <button class="block-tab-btn" data-block="3">Blok 03</button>
-      <button class="block-tab-btn" data-block="4">Blok 04</button>
-      <button class="block-tab-btn" data-block="5">Blok 05</button>
-      <button class="block-tab-btn" data-block="6">Blok 06</button>
-      <button class="block-tab-btn" data-block="7">Blok 07</button>
-      <button class="block-tab-btn" data-block="8">Blok 08</button>
-      <button class="block-tab-btn" data-block="9">Blok 09</button>
-      <button class="block-tab-btn" data-block="10">Blok 10</button>
-      <button class="block-tab-btn" data-block="11">Blok 11</button>
-      <button class="block-tab-btn" data-block="12">Blok 12</button>
-      <button class="block-tab-btn" data-block="13">Blok 13</button>
-      <button class="block-tab-btn" data-block="14">Blok 14</button>
-      <button class="block-tab-btn" data-block="15">Blok 15</button>
-      <button class="block-tab-btn" data-block="16">Blok 16</button>
+    <!-- Quickbar with Minimize / Expand toggle -->
+    <nav class="block-quickbar" id="block-quickbar">
+      <!-- Minimized Summary Badge (Shown when minimized) -->
+      <div id="quickbar-min-badge" class="quickbar-min-badge" title="Klik untuk membuka pilihan blok">
+        <i class="fa-solid fa-layer-group" style="color: var(--accent-cyan);"></i>
+        <span id="quickbar-current-block-label">Semua Blok</span>
+        <i class="fa-solid fa-chevron-down toggle-icon-indicator"></i>
+      </div>
+
+      <!-- Full block list buttons -->
+      <div class="block-quickbar-items" id="block-quickbar-items">
+        <button class="block-tab-btn active" data-block="all">Semua Blok</button>
+        <button class="block-tab-btn" data-block="1">Blok 01</button>
+        <button class="block-tab-btn" data-block="2">Blok 02</button>
+        <button class="block-tab-btn" data-block="3">Blok 03</button>
+        <button class="block-tab-btn" data-block="4">Blok 04</button>
+        <button class="block-tab-btn" data-block="5">Blok 05</button>
+        <button class="block-tab-btn" data-block="6">Blok 06</button>
+        <button class="block-tab-btn" data-block="7">Blok 07</button>
+        <button class="block-tab-btn" data-block="8">Blok 08</button>
+        <button class="block-tab-btn" data-block="9">Blok 09</button>
+        <button class="block-tab-btn" data-block="10">Blok 10</button>
+        <button class="block-tab-btn" data-block="11">Blok 11</button>
+        <button class="block-tab-btn" data-block="12">Blok 12</button>
+        <button class="block-tab-btn" data-block="13">Blok 13</button>
+        <button class="block-tab-btn" data-block="14">Blok 14</button>
+        <button class="block-tab-btn" data-block="15">Blok 15</button>
+        <button class="block-tab-btn" data-block="16">Blok 16</button>
+      </div>
+
+      <!-- Minimize Toggle Button (Visible when expanded) -->
+      <button id="btn-toggle-quickbar" class="quickbar-toggle-btn" title="Ciutkan bar blok agar pandangan 3D bebas halangan">
+        <i class="fa-solid fa-chevron-up"></i>
+      </button>
     </nav>
   </header>
 
@@ -129,7 +148,7 @@
 
   <!-- Left Control & Stats Panel -->
   <aside id="left-panel" class="left-controls-panel glass-panel">
-    
+
     <!-- Mobile Header with Close Button -->
     <div class="panel-mobile-header">
       <div class="section-title" style="margin: 0; font-size: 13px; color: #fff;">
@@ -137,7 +156,7 @@
       </div>
       <button id="btn-close-panel" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    
+
     <!-- Real-time Stats Grid -->
     <div>
       <div class="section-title">
@@ -253,21 +272,25 @@
     <button class="cam-btn" data-cam="front"><i class="fa-solid fa-eye"></i> Tampak Depan (Selatan)</button>
     <button class="cam-btn" data-cam="west"><i class="fa-solid fa-arrow-left"></i> Sisi Barat (Blok 1-8)</button>
     <button class="cam-btn" data-cam="east"><i class="fa-solid fa-arrow-right"></i> Sisi Timur (Blok 9-16)</button>
-    <button id="btn-reset-all" class="cam-btn" style="border-color: rgba(245, 158, 11, 0.4);"><i class="fa-solid fa-rotate-left" style="color: var(--accent-amber);"></i> Reset Semua UI</button>
+    <button id="btn-reset-all" class="cam-btn" style="border-color: rgba(245, 158, 11, 0.4);"><i
+        class="fa-solid fa-rotate-left" style="color: var(--accent-amber);"></i> Reset Semua UI</button>
   </div>
 
   <!-- Mobile Bottom Action Bar (Cepat & Praktis di HP) -->
   <nav class="mobile-bottom-nav">
     <button id="m-btn-denah" class="m-nav-btn"><i class="fa-solid fa-table-cells"></i><span>Denah 2D</span></button>
-    <button id="m-btn-search" class="m-nav-btn highlight"><i class="fa-solid fa-magnifying-glass"></i><span>Cari Bal</span></button>
+    <button id="m-btn-search" class="m-nav-btn highlight"><i class="fa-solid fa-magnifying-glass"></i><span>Cari
+        Bal</span></button>
     <button id="m-btn-filter" class="m-nav-btn"><i class="fa-solid fa-sliders"></i><span>Menu Filter</span></button>
-    <button id="m-btn-reset" class="m-nav-btn"><i class="fa-solid fa-rotate-left" style="color: var(--accent-amber);"></i><span>Reset Semua</span></button>
+    <button id="m-btn-reset" class="m-nav-btn"><i class="fa-solid fa-rotate-left"
+        style="color: var(--accent-amber);"></i><span>Reset Semua</span></button>
   </nav>
 
   <!-- Right Inspector Drawer (Detail Bal yang Diklik) -->
   <aside id="inspector-drawer" class="inspector-drawer glass-panel">
     <div class="drawer-header">
-      <div class="drawer-title"><i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Detail Bal Terpilih</div>
+      <div class="drawer-title"><i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Detail Bal
+        Terpilih</div>
       <button id="close-drawer-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
@@ -328,25 +351,30 @@
   <div id="upload-modal" class="modal-backdrop">
     <div class="modal-dialog">
       <div class="drawer-header">
-        <div class="drawer-title"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Update Data dari Excel (.xlsx)</div>
+        <div class="drawer-title"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Update Data dari Excel
+          (.xlsx)</div>
         <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
-        Upload file <code>Dokumen_Rekap_NoGud_Barkot_Kg.xlsx</code> atau file laporan susunan bal untuk me-refresh data dan visualisasi 3D secara langsung.
+        Upload file <code>Dokumen_Rekap_NoGud_Barkot_Kg.xlsx</code> atau file laporan susunan bal untuk me-refresh data
+        dan visualisasi 3D secara langsung.
       </p>
 
       <div id="excel-dropzone" class="dropzone">
-        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: var(--accent-cyan); margin-bottom: 12px;"></i>
+        <i class="fa-solid fa-cloud-arrow-up"
+          style="font-size: 32px; color: var(--accent-cyan); margin-bottom: 12px;"></i>
         <div style="font-size: 13px; font-weight: 600; color: #fff;">Tarik & Lepas File Excel Disini</div>
-        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">atau klik untuk memilih file dari komputer Anda (.xlsx)</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">atau klik untuk memilih file dari
+          komputer Anda (.xlsx)</div>
         <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
       </div>
     </div>
   </div>
 
   <!-- Embedded Warehouse Data for Zero-CORS standalone execution -->
-  <script src="warehouse_data.js?v=4.7"></script>
+  <script src="warehouse_data.js?v=4.8"></script>
   <!-- Application Logic with Cache Buster -->
-  <script src="app.js?v=4.7"></script>
+  <script src="app.js?v=4.8"></script>
 </body>
+
 </html>

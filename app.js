@@ -618,7 +618,73 @@ function populateFilterOptions(gradeCounts) {
   });
 }
 
+// Quickbar Minimize State & Helpers
+let isQuickbarManuallyMinimized = false;
+
+function toggleQuickbarMinimize(forceState, isManual = false) {
+  const quickbar = document.getElementById('block-quickbar');
+  if (!quickbar) return;
+
+  const shouldMinimize = (typeof forceState === 'boolean') 
+    ? forceState 
+    : !quickbar.classList.contains('minimized');
+
+  if (isManual) {
+    isQuickbarManuallyMinimized = shouldMinimize;
+  }
+
+  quickbar.classList.toggle('minimized', shouldMinimize);
+
+  const toggleBtn = document.getElementById('btn-toggle-quickbar');
+  if (toggleBtn) {
+    toggleBtn.setAttribute('title', shouldMinimize ? 'Tampilkan Pilihan Blok' : 'Ciutkan Bar Blok');
+    toggleBtn.innerHTML = shouldMinimize 
+      ? '<i class="fa-solid fa-chevron-down"></i>' 
+      : '<i class="fa-solid fa-chevron-up"></i>';
+  }
+}
+
+function updateQuickbarActiveBlock(blockVal) {
+  const badgeLabel = document.getElementById('quickbar-current-block-label');
+  if (badgeLabel) {
+    if (blockVal === 'all') {
+      badgeLabel.innerText = 'Semua Blok';
+    } else {
+      const num = parseInt(blockVal, 10);
+      badgeLabel.innerText = `Blok ${num < 10 ? '0' + num : num}`;
+    }
+  }
+
+  // Update tab buttons active state
+  document.querySelectorAll('.block-tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-block') === String(blockVal));
+  });
+
+  // Sync select dropdown if not matching
+  const blockSelect = document.getElementById('filter-block');
+  if (blockSelect && blockSelect.value !== String(blockVal)) {
+    blockSelect.value = String(blockVal);
+  }
+}
+
 function setupUIEventListeners() {
+  // Quickbar Minimize Toggle & Minimized Badge
+  const toggleQuickbarBtn = document.getElementById('btn-toggle-quickbar');
+  if (toggleQuickbarBtn) {
+    toggleQuickbarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleQuickbarMinimize(undefined, true);
+    });
+  }
+
+  const quickbarMinBadge = document.getElementById('quickbar-min-badge');
+  if (quickbarMinBadge) {
+    quickbarMinBadge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleQuickbarMinimize(false, true);
+    });
+  }
+
   // Mobile Panel Toggle & Close
   const togglePanelBtn = document.getElementById('btn-toggle-panel');
   const closePanelBtn = document.getElementById('btn-close-panel');
@@ -665,6 +731,7 @@ function setupUIEventListeners() {
   if (blockSelect) {
     blockSelect.addEventListener('change', (e) => {
       activeFilter.block = e.target.value;
+      updateQuickbarActiveBlock(e.target.value);
       if (e.target.value !== 'all') {
         focusOnBlock(parseInt(e.target.value));
       } else {
@@ -703,6 +770,8 @@ function setupUIEventListeners() {
       applyFilters();
       
       if (activeFilter.searchQuery) {
+        // Auto-minimize bar blok agar visualisasi bal dan laser beacon 3D tidak terhalang
+        toggleQuickbarMinimize(true, false);
         renderSearchSuggestions(activeFilter.searchQuery);
         highlightFirstSearchMatch(activeFilter.searchQuery);
       } else {
@@ -713,6 +782,10 @@ function setupUIEventListeners() {
         hideLocationFinderHUD();
         removeBeacon();
         resetCameraOverview();
+        // Kembalikan bar blok ke tampilan penuh jika tidak diminimize manual oleh user
+        if (!isQuickbarManuallyMinimized) {
+          toggleQuickbarMinimize(false, false);
+        }
       }
     });
 
@@ -806,11 +879,8 @@ function setupUIEventListeners() {
   // Quick Block Bar Tab Buttons
   document.querySelectorAll('.block-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.block-tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
       const bVal = btn.getAttribute('data-block');
-      const blockSelect = document.getElementById('filter-block');
-      if (blockSelect) blockSelect.value = bVal;
+      updateQuickbarActiveBlock(bVal);
 
       activeFilter.block = bVal;
       if (bVal !== 'all') {
@@ -1024,6 +1094,9 @@ function onMouseMove(event) {
 function selectBale(baleData, mesh) {
   selectedBale = baleData;
   applyFilters();
+
+  // Auto-minimize bar blok agar bal di 3D tidak terhalang oleh quickbar
+  toggleQuickbarMinimize(true, false);
 
   // Populate Right Drawer
   const drawer = document.getElementById('inspector-drawer');
@@ -1363,16 +1436,13 @@ function resetAllUI() {
   activeFilter.explodeFactor = 0;
   activeFilter.colorMode = 'grade';
 
-  // Update UI Inputs & Buttons
-  const blockSelect = document.getElementById('filter-block');
-  if (blockSelect) blockSelect.value = 'all';
+  // 7. Reset Quickbar state & expand
+  isQuickbarManuallyMinimized = false;
+  toggleQuickbarMinimize(false, false);
+  updateQuickbarActiveBlock('all');
 
   const gradeSelect = document.getElementById('filter-grade');
   if (gradeSelect) gradeSelect.value = 'all';
-
-  document.querySelectorAll('.block-tab-btn').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-block') === 'all');
-  });
 
   document.querySelectorAll('.layer-btn').forEach(b => {
     b.classList.add('active');

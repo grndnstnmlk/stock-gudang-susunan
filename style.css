@@ -27,7 +27,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -47,7 +48,13 @@ body {
   -webkit-user-select: none;
 }
 
-button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
+button,
+input,
+select,
+.btn-pill,
+.cam-btn,
+.block-tab-btn,
+.m-nav-btn {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -94,13 +101,15 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   justify-content: space-between;
   padding: 0 20px;
   pointer-events: auto;
+  z-index: 1100;
 }
 
 .block-quickbar {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 6px;
   padding: 8px 12px;
   background: rgba(15, 23, 42, 0.95);
@@ -109,15 +118,88 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   pointer-events: auto;
+  z-index: 10;
+  min-height: 44px;
+  box-sizing: border-box;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.block-quickbar-items {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  min-height: 44px;
-  box-sizing: border-box;
 }
 
-.block-quickbar::-webkit-scrollbar {
+.block-quickbar-items::-webkit-scrollbar {
   display: none;
+}
+
+.quickbar-min-badge {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 9999px;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.quickbar-min-badge:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+}
+
+.quickbar-toggle-btn {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quickbar-toggle-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+/* Minimize state for quickbar (Global across all screen sizes) */
+.block-quickbar.minimized {
+  width: auto;
+  max-width: max-content;
+  align-self: center;
+  margin: 0 auto;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  min-height: unset;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.block-quickbar.minimized .block-quickbar-items,
+.block-quickbar.minimized .quickbar-toggle-btn {
+  display: none !important;
+}
+
+.block-quickbar.minimized .quickbar-min-badge {
+  display: inline-flex !important;
 }
 
 .block-tab-btn {
@@ -189,6 +271,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
 .search-wrapper {
   position: relative;
   width: 380px;
+  z-index: 1200;
 }
 
 .search-input {
@@ -229,7 +312,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
   max-height: 280px;
   overflow-y: auto;
-  z-index: 1200;
+  z-index: 1250;
   display: none;
   flex-direction: column;
   backdrop-filter: blur(16px);
@@ -253,7 +336,8 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   border-bottom: none;
 }
 
-.search-suggestion-item:hover, .search-suggestion-item.active {
+.search-suggestion-item:hover,
+.search-suggestion-item.active {
   background: rgba(56, 189, 248, 0.15);
 }
 
@@ -343,6 +427,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   align-items: center;
   gap: 6px;
 }
+
 .location-finder-card {
   position: absolute;
   bottom: 74px;
@@ -367,6 +452,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
     opacity: 0;
     transform: translate(-50%, 20px);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -501,6 +587,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
 .left-controls-panel::-webkit-scrollbar {
   width: 4px;
 }
+
 .left-controls-panel::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
@@ -885,51 +972,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   line-height: 1.4;
 }
 
-/* Quick Block Selector Bar (Top under navbar) */
-.block-quickbar {
-  position: absolute;
-  top: 86px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 4px;
-  background: var(--bg-surface);
-  backdrop-filter: blur(12px);
-  padding: 4px 8px;
-  border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  z-index: 10;
-  max-width: 90vw;
-  overflow-x: auto;
-}
 
-.block-quickbar::-webkit-scrollbar {
-  display: none;
-}
-
-.block-tab-btn {
-  padding: 4px 10px;
-  border-radius: 9999px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.block-tab-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.block-tab-btn.active {
-  background: var(--accent-cyan);
-  color: #04101e;
-  font-weight: 700;
-}
 
 /* Tooltip 3D on Hover */
 #hover-tooltip {
@@ -943,7 +986,7 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
   font-size: 12px;
   font-weight: 600;
   color: #fff;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
   opacity: 0;
   transform: translate(-50%, -120%);
   transition: opacity 0.15s ease;
@@ -1057,7 +1100,8 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
    MOBILE & IPHONE 16 PRO MAX RESPONSIVE OPTIMIZATION
    ============================================================================== */
 #canvas-container {
-  touch-action: none; /* Prevent iOS Safari pull-to-refresh while orbiting */
+  touch-action: none;
+  /* Prevent iOS Safari pull-to-refresh while orbiting */
 }
 
 @media (max-width: 1024px) {
@@ -1127,35 +1171,62 @@ button, input, select, .btn-pill, .cam-btn, .block-tab-btn, .m-nav-btn {
     max-width: 100% !important;
     align-self: stretch !important;
     border-radius: var(--radius-md) !important;
-    padding: 8px 10px !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    padding: 6px 8px !important;
+    overflow-x: hidden !important;
     display: flex !important;
-    justify-content: flex-start !important;
+    justify-content: space-between !important;
     align-items: center !important;
     gap: 6px !important;
     background: rgba(15, 23, 42, 0.95) !important;
     border: 1px solid var(--border-color) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
-    scrollbar-width: none !important;
-    min-height: 44px !important;
+    min-height: 40px !important;
     box-sizing: border-box !important;
   }
 
-  .block-quickbar::-webkit-scrollbar {
+  .block-quickbar-items {
+    flex: 1 1 auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+
+  .block-quickbar-items::-webkit-scrollbar {
     display: none !important;
+  }
+
+  .block-quickbar.minimized {
+    width: auto !important;
+    max-width: max-content !important;
+    align-self: center !important;
+    margin: 0 auto !important;
+    border-radius: 9999px !important;
+    padding: 4px 10px !important;
+    min-height: unset !important;
+  }
+
+  .block-quickbar.minimized .block-quickbar-items,
+  .block-quickbar.minimized .quickbar-toggle-btn {
+    display: none !important;
+  }
+
+  .block-quickbar.minimized .quickbar-min-badge {
+    display: inline-flex !important;
   }
 
   .block-tab-btn {
     flex: 0 0 auto !important;
     flex-shrink: 0 !important;
-    padding: 6px 12px !important;
+    padding: 5px 11px !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     white-space: nowrap !important;
     border-radius: 9999px !important;
-    min-height: 30px !important;
+    min-height: 28px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
