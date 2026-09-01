@@ -18,8 +18,55 @@ def is_valid_barcode(b):
         return False
     return True
 
+SUPABASE_URL = "https://jrpklibocgicubevyshm.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycGtsaWJvY2dpY3ViZXZ5c2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NTA3NjUsImV4cCI6MjEwMzQyNjc2NX0.xGoel8SNa2v9DcZBYwKcmjzGF7j6LJ-OQkr919JyYSc"
+
 def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
     master_dict = {}
+    
+    # 1. Coba ambil data realtime dari Cloud Supabase (Cek Barkot)
+    try:
+        import urllib.request
+        import json
+        url = f"{SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc"
+        headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": f"Bearer {SUPABASE_ANON_KEY}"
+        }
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=5) as response:
+            records = json.loads(response.read().decode("utf-8"))
+            for r in records:
+                no_gud = r.get("no_gud")
+                if not no_gud:
+                    continue
+                k = str(no_gud).strip()
+                barkot = str(r.get("barkot") or "").strip()
+                grade = str(r.get("grade") or "").strip()
+                kg = r.get("kg") if r.get("kg") is not None else ""
+                has_b = is_valid_barcode(barkot)
+                status = "SELESAI" if has_b else ("SELESAI" if r.get("is_done") else "-")
+                
+                if k not in master_dict or has_b:
+                    master_dict[k] = {
+                        "no_gud": no_gud,
+                        "barkot": barkot if has_b else "",
+                        "grade": grade or (master_dict[k]["grade"] if k in master_dict else ""),
+                        "kg": kg if kg != "" else (master_dict[k]["kg"] if k in master_dict else ""),
+                        "status": status,
+                        "ket": r.get("tanggal", "")
+                    }
+                else:
+                    if grade and not master_dict[k]["grade"]:
+                        master_dict[k]["grade"] = grade
+                    if kg != "" and master_dict[k]["kg"] == "":
+                        master_dict[k]["kg"] = kg
+        print(f"[OK] Berhasil memuat {len(master_dict)} data master realtime dari Cek Barkot (Supabase Cloud).")
+        return master_dict
+    except Exception as err:
+        print(f"[!] Info: Tidak dapat menghubungi Supabase ({err}). Menggunakan data lokal '{master_filepath}'.")
+
+    # 2. Fallback Offline: Baca dari file Excel master lokal
     if not os.path.exists(master_filepath):
         print(f"Warning: {master_filepath} not found. Running with empty master dictionary.")
         return master_dict
@@ -48,10 +95,6 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
             }
         else:
             has_old_barkot = is_valid_barcode(master_dict[k].get('barkot'))
-            # Aturan:
-            # 1. Jika data baru (tanggal selanjutnya) memiliki barcode valid -> otomatis timpa data lama.
-            # 2. Jika data baru TIDAK ada barcode (misal OUT/kosong), tapi data lama SUDAH punya barcode -> pertahankan barcode lama!
-            # 3. Jika dua-duanya belum punya barcode -> perbarui atribut status/grade/kg jika ada.
             if has_new_barkot:
                 master_dict[k] = {
                     'no_gud': no_gud,
@@ -71,20 +114,18 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
                     'ket': ket_str or master_dict[k]['ket']
                 }
 
-    # 1. Baca dari sheet harian (21 s/d 30 Agustus)
     daily_sheets = [s for s in wb_master.sheetnames if s not in ['Semua Data (Master)', 'Ringkasan Per Tanggal']]
     for sname in daily_sheets:
         ws = wb_master[sname]
         for r in range(5, ws.max_row + 1):
             update_entry(ws.cell(r, 2).value, ws.cell(r, 3).value, ws.cell(r, 4).value, ws.cell(r, 5).value, ws.cell(r, 6).value, ws.cell(r, 7).value)
 
-    # 2. Baca / lengkapi dari sheet Semua Data (Master)
     if 'Semua Data (Master)' in wb_master.sheetnames:
         ws_m = wb_master['Semua Data (Master)']
         for r in range(5, ws_m.max_row + 1):
             update_entry(ws_m.cell(r, 3).value, ws_m.cell(r, 4).value, ws_m.cell(r, 5).value, ws_m.cell(r, 6).value, ws_m.cell(r, 7).value, ws_m.cell(r, 8).value)
 
-    # 3. Custom / User Overrides
+    # Custom / User Overrides
     custom_overrides = {
         '259': {'no_gud': 259, 'barkot': '30164', 'grade': '55', 'kg': 55, 'status': 'SELESAI', 'ket': ''},
     }
@@ -134,9 +175,10 @@ blocks_data = {
         "title": "BLOK 01",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [305, 18, 520, 144, 234, 274], # T4 (Atas)
+            [182, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [305, 18,  520, 144, 234, 274], # T4
             [508, 214, 460, 462, 516, 123], # T3
-            [283, 23, 467, 509, 177, 193],  # T2
+            [283, 23,  467, 509, 177, 193], # T2
             [494, 497, 453, 474, 116, 310], # T1 (Dasar)
         ]
     },
@@ -144,18 +186,20 @@ blocks_data = {
         "title": "BLOK 02",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [125, 444, 158, 448, 108, 112], # T4 (Atas)
-            [493, 439, 438, 511, 171, 124],  # T3
+            [289, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [125, 444, 158, 448, 108, 112], # T4
+            [493, 439, 438, 511, 171, 124], # T3
             [183, 368, 464, 491, 469, 504], # T2
-            [164, 288, 510, 227, 416, 99],   # T1 (Dasar)
+            [164, 288, 510, 227, 416, 99 ], # T1 (Dasar)
         ]
     },
     3: {
         "title": "BLOK 03",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [230, 199, 503, 495, 32, 437],  # T4 (Atas)
-            [180, 473, 432, 456, 282, 91],  # T3
+            [132, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [230, 199, 503, 495, 32,  437], # T4
+            [180, 473, 432, 456, 282, 91 ], # T3
             [222, 217, 502, 440, 487, 107], # T2
             [408, 465, 296, 421, 463, 206], # T1 (Dasar)
         ]
@@ -182,59 +226,59 @@ blocks_data = {
     },
     6: {
         "title": "BLOK 06",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [388, 367, 349, 336, 300], # T4 (Atas)
-            [472, 334, 315, 387, 103], # T3
-            [423, 389, 365, 263, 458], # T2
-            [211, 258, 433, 398, 122], # T1 (Dasar)
+            [219, 388, 367, 349, 336, 300], # T4 (Atas)
+            [129, 472, 334, 315, 387, 103], # T3
+            [29,  423, 389, 365, 263, 458], # T2
+            [624, 211, 258, 433, 398, 122], # T1 (Dasar)
         ]
     },
     7: {
         "title": "BLOK 07",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [606, 318, 427, 395, 311], # T4 (Atas)
-            [593, 380, 350, 330, 329], # T3
-            [600, 377, 326, 339, 375], # T2
-            [589, 320, 384, 371, 352], # T1 (Dasar)
+            [616, 606, 318, 427, 395, 311], # T4 (Atas)
+            [617, 593, 380, 350, 330, 329], # T3
+            [619, 600, 377, 326, 339, 375], # T2
+            [618, 589, 320, 384, 371, 352], # T1 (Dasar)
         ]
     },
     8: {
         "title": "BLOK 08",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [591, 267, 271, 90,  341], # T4 (Atas)
-            [588, 340, 382, 333, 265], # T3
-            [585, 425, 369, 383, 393], # T2
-            [599, 325, 379, 324, 385], # T1 (Dasar)
+            [620, 591, 267, 271, 90,  341], # T4 (Atas)
+            [621, 588, 340, 382, 333, 265], # T3
+            [623, 585, 425, 369, 383, 393], # T2
+            [612, 599, 325, 379, 324, 385], # T1 (Dasar)
         ]
     },
     9: {
         "title": "BLOK 09",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [595, 418, 426, 337, 323], # T4 (Atas)
-            [604, 419, 424, 254, 378], # T3
-            [603, 275, 197, 331, 396], # T2
-            [592, 321, 415, 434, 278], # T1 (Dasar)
+            [622, 595, 418, 426, 337, 323], # T4 (Atas)
+            [613, 604, 419, 424, 254, 378], # T3
+            [614, 603, 275, 197, 331, 396], # T2
+            [615, 592, 321, 415, 434, 278], # T1 (Dasar)
         ]
     },
     10: {
         "title": "BLOK 10",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5"],
+        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [597, 488, 344, 428, 470], # T4 (Atas)
-            [586, 420, 358, 50,  406], # T3
-            [590, 400, 390, 328, 366], # T2
-            [594, 421, 351, 255, 392], # T1 (Dasar)
+            [605, 597, 488, 344, 428, 470], # T4 (Atas)
+            [609, 586, 420, 358, 50,  406], # T3
+            [607, 590, 400, 390, 328, 366], # T2
+            [610, 594, 421, 351, 255, 392], # T1 (Dasar)
         ]
     },
     11: {
         "title": "BLOK 11",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            ["",  587, 247, 414, 346, 338], # T4 (Atas)
+            [611, 587, 247, 414, 346, 338], # T4 (Atas)
             [118, 565, 154, 505, 259, 228], # T3
             [598, 567, 422, 347, 327, 355], # T2
             [596, 534, 289, 410, 357, 404], # T1 (Dasar)
@@ -445,8 +489,10 @@ for b_idx in range(1, 17):
     curr_r += 2
     
     # 3. Data Rows (7 Tingkat)
+    num_data_rows = len(b["data"])
+    block_tingkat_info = [('T7 (Atas)' if t == 7 else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(7, 0, -1)]
     data_idx = 0
-    for t_name, is_empty in all_tingkat_info:
+    for t_name, is_empty in block_tingkat_info:
         # Tingkat label
         t_cell = ws_full.cell(curr_r, start_col, t_name)
         t_cell.font = font_tingkat
@@ -566,8 +612,10 @@ for b_idx in range(1, 17):
     ws_portrait.row_dimensions[curr_r].height = 20
     
     # Data Rows (7 Tiers)
+    num_data_rows = len(b["data"])
+    block_tingkat_info = [('T7 (Atas)' if t == 7 else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(7, 0, -1)]
     data_idx = 0
-    for t_name, is_empty in all_tingkat_info:
+    for t_name, is_empty in block_tingkat_info:
         curr_r += 1
         t_cell = ws_portrait.cell(curr_r, 2, t_name)
         t_cell.font = font_tingkat
@@ -626,32 +674,34 @@ for b_num in range(1, 17):
     num_saf = len(blocks_data[b_num]["headers"])
     total_grid_cols = num_saf * 3
     
-    # 3 Baris Kosong di Bagian Atas (Tingkat 7, Tingkat 6, Tingkat 5)
-    for r_empty in range(3):
+    num_empty = 7 - len(matrix)
+    
+    # Baris Kosong di Bagian Atas (Tingkat 7, Tingkat 6, dst.)
+    for r_empty in range(num_empty):
         for c_idx in range(total_grid_cols):
             cell = ws2.cell(row=grid_start_r + r_empty, column=c_idx + 1, value=None)
             cell.border = border_all_black
             
-    # 4 Baris Data Terisi di Bagian Bawah (Tingkat 4, Tingkat 3, Tingkat 2, Tingkat 1)
+    # Baris Data Terisi di Bagian Bawah
     for r_idx, row_data in enumerate(matrix):
         for s_idx, val in enumerate(row_data):
             no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val)
             c_base = (s_idx * 3) + 1
             
             # No Gud
-            c1 = ws2.cell(row=grid_start_r + 3 + r_idx, column=c_base, value=no_gud_val)
+            c1 = ws2.cell(row=grid_start_r + num_empty + r_idx, column=c_base, value=no_gud_val)
             c1.font = font_data_nogud
             c1.alignment = align_center
             c1.border = border_all_black
             
             # Barkot
-            c2 = ws2.cell(row=grid_start_r + 3 + r_idx, column=c_base + 1, value=barkot_val)
+            c2 = ws2.cell(row=grid_start_r + num_empty + r_idx, column=c_base + 1, value=barkot_val)
             c2.font = font_data_barkot
             c2.alignment = align_center
             c2.border = border_all_black
             
             # Kg
-            c3 = ws2.cell(row=grid_start_r + 3 + r_idx, column=c_base + 2, value=format_kg_display(kg_val))
+            c3 = ws2.cell(row=grid_start_r + num_empty + r_idx, column=c_base + 2, value=format_kg_display(kg_val))
             c3.font = font_data_kg
             c3.alignment = align_center
             c3.fill = fill_kg_col
@@ -779,12 +829,8 @@ ws3.row_dimensions[db_start_r].height = 22
 item_idx = 1
 for b_num in range(1, 17):
     b = blocks_data[b_num]
-    tier_order = [
-        (4, 'Tingkat 4'),
-        (3, 'Tingkat 3'),
-        (2, 'Tingkat 2'),
-        (1, 'Tingkat 1 (Dasar)')
-    ]
+    num_data_rows = len(b["data"])
+    tier_order = [(t, 'Tingkat 1 (Dasar)' if t == 1 else f'Tingkat {t}') for t in range(num_data_rows, 0, -1)]
     for t_row_idx, (t_num, t_desc) in enumerate(tier_order):
         row_vals = b["data"][t_row_idx]
         for c_idx, val in enumerate(row_vals):

@@ -10,7 +10,7 @@ let blockGroups = {}; // grouped by block id
 let activeFilter = {
   block: 'all',
   grade: 'all',
-  layers: { 1: true, 2: true, 3: true, 4: true },
+  layers: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true },
   searchQuery: '',
   colorMode: 'grade', // 'grade' | 'weight' | 'layer' | 'realistic'
   explodeFactor: 0
@@ -229,15 +229,83 @@ function createCompassMarkers(w, d) {
 // ==============================================================================
 // 2. DATA PROCESSING & 3D BALE GENERATION (16 BLOK DI SELATAN GUDANG DARI BARAT KE TIMUR)
 // ==============================================================================
+const SUPABASE_URL = 'https://jrpklibocgicubevyshm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycGtsaWJvY2dpY3ViZXZ5c2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NTA3NjUsImV4cCI6MjEwMzQyNjc2NX0.xGoel8SNa2v9DcZBYwKcmjzGF7j6LJ-OQkr919JyYSc';
+
+async function fetchLiveSupabaseMaster(showNotification = false) {
+  const syncBtn = document.getElementById('btn-sync-supabase');
+  if (syncBtn) {
+    syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color: #a855f7;"></i><span>Menyinkronkan...</span>';
+    syncBtn.disabled = true;
+  }
+  
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const records = await res.json();
+    
+    const liveMaster = {};
+    records.forEach(r => {
+      if (!r.no_gud) return;
+      const k = String(r.no_gud).trim();
+      const barkot = String(r.barkot || '').trim();
+      const grade = String(r.grade || '').trim();
+      const kg = r.kg !== null && r.kg !== undefined ? r.kg : '';
+      const isDone = r.is_done;
+      const hasB = barkot && !['none', 'null', '-', 'out'].includes(barkot.toLowerCase());
+      
+      if (!liveMaster[k] || hasB) {
+        liveMaster[k] = {
+          no_gud: r.no_gud,
+          barkot: hasB ? barkot : '',
+          grade: grade || (liveMaster[k]?.grade || ''),
+          kg: kg !== '' ? kg : (liveMaster[k]?.kg || ''),
+          status: hasB ? 'SELESAI' : (isDone ? 'SELESAI' : '-'),
+          ket: r.tanggal || ''
+        };
+      }
+    });
+
+    if (window.WAREHOUSE_DATA) {
+      window.WAREHOUSE_DATA.master = { ...window.WAREHOUSE_DATA.master, ...liveMaster };
+      buildWarehouse3D(window.WAREHOUSE_DATA);
+    }
+    
+    if (showNotification) {
+      alert(`[✓] Berhasil sinkronisasi ${records.length} data barkot & kg terbaru dari Cek Barkot Cloud (Supabase)!`);
+    }
+    return records.length;
+  } catch (err) {
+    console.warn('[Supabase Sync] Offline or fetch failed, using local master data:', err);
+    if (showNotification) {
+      alert(`[!] Gagal menghubungi cloud Supabase (${err.message}). Menggunakan database lokal.`);
+    }
+    return 0;
+  } finally {
+    if (syncBtn) {
+      syncBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down" style="color: #a855f7;"></i><span>Sync Cek Barkot</span>';
+      syncBtn.disabled = false;
+    }
+  }
+}
+
 function loadInitialData() {
   if (window.WAREHOUSE_DATA) {
     buildWarehouse3D(window.WAREHOUSE_DATA);
+    fetchLiveSupabaseMaster(false);
   } else {
     fetch('warehouse_data.json')
       .then(res => res.json())
       .then(data => {
         window.WAREHOUSE_DATA = data;
         buildWarehouse3D(data);
+        fetchLiveSupabaseMaster(false);
       })
       .catch(err => {
         console.error('Failed to load warehouse data', err);
@@ -317,7 +385,7 @@ function buildWarehouse3D(rawData) {
     // data is array of 4 rows: [T4, T3, T2, T1]
     const dataRows = bInfo.data; // 4 rows
     dataRows.forEach((row, rowIdx) => {
-      const layerLevel = 4 - rowIdx; // 4, 3, 2, 1 (T4 at top, T1 at bottom)
+      const layerLevel = dataRows.length - rowIdx; // T5, T4, T3, T2, T1 dynamically
       
       row.forEach((noGudVal, safIdx) => {
         if (noGudVal === "" || noGudVal === null || noGudVal === undefined) return;
@@ -669,6 +737,14 @@ function updateQuickbarActiveBlock(blockVal) {
 }
 
 function setupUIEventListeners() {
+  // Sync Cloud Supabase Button
+  const syncSupabaseBtn = document.getElementById('btn-sync-supabase');
+  if (syncSupabaseBtn) {
+    syncSupabaseBtn.addEventListener('click', () => {
+      fetchLiveSupabaseMaster(true);
+    });
+  }
+
   // Quickbar Minimize Toggle & Minimized Badge
   const toggleQuickbarBtn = document.getElementById('btn-toggle-quickbar');
   if (toggleQuickbarBtn) {
@@ -1214,7 +1290,7 @@ function renderBlockMatrix(baleData) {
   let obstructingBales = [];
 
   dataRows.forEach((row, rowIdx) => {
-    const layerLevel = 4 - rowIdx; // 4, 3, 2, 1
+    const layerLevel = dataRows.length - rowIdx; // T5, T4, T3, T2, T1 dynamically
     html += `<tr><td style="font-weight:700; background:rgba(30,41,59,0.7); color:#94a3b8;">T${layerLevel}</td>`;
     
     row.forEach((noGud, safIdx) => {
@@ -1348,7 +1424,8 @@ function renderAllBlocks2DGrid() {
           <tbody>
     `;
 
-    for (let lvl = 4; lvl >= 1; lvl--) {
+    const maxLvl = Math.max(5, ...blockBales.map(b => b.layerLevel));
+    for (let lvl = maxLvl; lvl >= 1; lvl--) {
       html += `<tr><td style="font-weight:700; color:var(--text-muted);">T${lvl}</td>`;
       for (let sIdx = 1; sIdx <= 6; sIdx++) {
         const found = blockBales.find(b => b.safIndex === sIdx && b.layerLevel === lvl);
@@ -1433,7 +1510,7 @@ function resetAllUI() {
   // 6. Reset Filters (Block, Grade, Layers, Explode, ColorMode)
   activeFilter.block = 'all';
   activeFilter.grade = 'all';
-  activeFilter.layers = { 1: true, 2: true, 3: true, 4: true };
+  activeFilter.layers = { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true };
   activeFilter.explodeFactor = 0;
   activeFilter.colorMode = 'grade';
 
