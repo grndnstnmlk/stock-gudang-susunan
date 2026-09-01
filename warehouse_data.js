@@ -274,7 +274,7 @@ window.WAREHOUSE_DATA = {
           334,
           315,
           387,
-          103
+          515
         ],
         [
           29,
@@ -4254,7 +4254,7 @@ window.WAREHOUSE_DATA = {
       "no_gud": 618,
       "barkot": "34899",
       "grade": "68",
-      "kg": 45,
+      "kg": 45.0,
       "status": "SELESAI",
       "ket": "2026-08-31"
     },
