@@ -67,20 +67,39 @@ window.addEventListener('DOMContentLoaded', () => {
 // ==============================================================================
 function initThree() {
   const container = document.getElementById('canvas-container');
+  const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x12130f); // Midnight Carbon
   scene.fog = new THREE.FogExp2(0x12130f, 0.002);
 
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 1000);
-  camera.position.set(0, 20, -18);
+  camera.position.set(0, isMobile ? 18 : 20, isMobile ? -24 : -18);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer = new THREE.WebGLRenderer({ 
+    antialias: !isMobile, 
+    powerPreference: "high-performance",
+    precision: isMobile ? "mediump" : "highp"
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1.25) : Math.min(window.devicePixelRatio, 1.75));
+  renderer.shadowMap.enabled = !isMobile;
+  if (!isMobile) {
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  }
   container.appendChild(renderer.domElement);
+
+  // WebGL Context Loss Recovery (Prevents mobile crashes)
+  renderer.domElement.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    console.warn('WebGL context lost, pausing rendering to save memory...');
+  }, false);
+
+  renderer.domElement.addEventListener('webglcontextrestored', () => {
+    console.log('WebGL context restored, rebuilding scene...');
+    initThree();
+    loadInitialData();
+  }, false);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -91,21 +110,23 @@ function initThree() {
   controls.target.set(0, 2, 4.8);
 
   // Lighting - Max Yinger Theme: Bone-white main light & soft Rose Quartz Bloom edge glow
-  const ambientLight = new THREE.AmbientLight(0xe4dfda, 0.7);
+  const ambientLight = new THREE.AmbientLight(0xe4dfda, 0.75);
   scene.add(ambientLight);
 
   const dirLight = new THREE.DirectionalLight(0xe4dfda, 0.85);
   dirLight.position.set(30, 45, 25);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.width = 2048;
-  dirLight.shadow.mapSize.height = 2048;
-  dirLight.shadow.camera.near = 5;
-  dirLight.shadow.camera.far = 150;
-  const d = 35;
-  dirLight.shadow.camera.left = -d;
-  dirLight.shadow.camera.right = d;
-  dirLight.shadow.camera.top = d;
-  dirLight.shadow.camera.bottom = -d;
+  if (!isMobile) {
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.camera.near = 5;
+    dirLight.shadow.camera.far = 150;
+    const d = 35;
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+  }
   scene.add(dirLight);
 
   // Soft Rose Quartz Bloom edge lighting bleed (#f5c2c8)
@@ -119,7 +140,7 @@ function initThree() {
   // Resize handler
   window.addEventListener('resize', onWindowResize);
   
-  // Interaction handlers (Support both desktop mouse & mobile touch tap)
+  // Interaction handlers
   renderer.domElement.addEventListener('mousemove', onMouseMove);
   renderer.domElement.addEventListener('pointerdown', onPointerDown);
   renderer.domElement.addEventListener('pointerup', onPointerUp);
@@ -324,13 +345,40 @@ function getBlockPosition(blockId) {
   return { x, z };
 }
 
-function buildWarehouse3D(rawData) {
-  // Clear previous meshes
-  baleMeshes.forEach(mesh => scene.remove(mesh));
+function clearWarehouse3D() {
+  baleMeshes.forEach(mesh => {
+    if (mesh.geometry) mesh.geometry.dispose();
+    if (mesh.material) {
+      if (Array.isArray(mesh.material)) mesh.material.forEach(m => m.dispose());
+      else mesh.material.dispose();
+    }
+    scene.remove(mesh);
+  });
   baleMeshes = [];
   balesData = [];
-  Object.values(blockGroups).forEach(grp => scene.remove(grp));
+
+  Object.values(blockGroups).forEach(grp => {
+    grp.traverse(child => {
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+        else child.material.dispose();
+      }
+    });
+    scene.remove(grp);
+  });
   blockGroups = {};
+
+  Object.keys(baleTextureCache).forEach(k => {
+    if (baleTextureCache[k]) {
+      baleTextureCache[k].dispose();
+      delete baleTextureCache[k];
+    }
+  });
+}
+
+function buildWarehouse3D(rawData) {
+  clearWarehouse3D();
 
   const blocks = rawData.blocks;
   const master = rawData.master || {};
@@ -442,9 +490,6 @@ function buildWarehouse3D(rawData) {
         mesh.receiveShadow = true;
         mesh.userData = baleData;
 
-        // Add strapping bands (realistic look)
-        addStrappingBands(mesh);
-
         blockGroup.add(mesh);
         baleMeshes.push(mesh);
         balesData.push(baleData);
@@ -461,16 +506,20 @@ function buildWarehouse3D(rawData) {
 const baleTextureCache = {};
 
 function getBaleCanvasTexture(baleData, colorMode) {
-  const cacheKey = `${baleData.noGud}_${baleData.grade}_${colorMode}`;
+  const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const cacheKey = `${baleData.noGud}_${baleData.grade}_${colorMode}_${isMobile ? 'm' : 'd'}`;
   if (baleTextureCache[cacheKey]) return baleTextureCache[cacheKey];
 
+  const size = isMobile ? 256 : 384;
+  const scale = size / 512;
+
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
+  canvas.width = size;
+  canvas.height = size;
   const ctx = canvas.getContext('2d');
 
   // Base Burlap / Jute Sack Color
-  let baseColor = '#c8a876'; // Natural golden tan burlap (Karung Goni)
+  let baseColor = '#c8a876';
 
   if (colorMode === 'grade') {
     const gKey = baleData.grade ? baleData.grade.trim().toUpperCase() : 'DEFAULT';
@@ -490,86 +539,66 @@ function getBaleCanvasTexture(baleData, colorMode) {
       baseColor = '#' + col.getHexString();
     }
   } else if (colorMode === 'realistic') {
-    baseColor = '#c49a65'; // Warm tobacco burlap
+    baseColor = '#c49a65';
   }
 
-  // 1. Fill base jute tone
+  // 1. Base burlap fill
   ctx.fillStyle = baseColor;
-  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillRect(0, 0, size, size);
 
-  // 2. Add Jute Woven Pattern (Fibers cross-hatching)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-  for (let x = 0; x < 512; x += 10) {
-    ctx.fillRect(x, 0, 5, 512);
+  // 2. Add subtle jute texture fibers
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+  for (let x = 0; x < size; x += Math.max(8 * scale, 4)) {
+    ctx.fillRect(x, 0, 3 * scale, size);
   }
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
-  for (let y = 0; y < 512; y += 10) {
-    ctx.fillRect(0, y, 512, 5);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+  for (let y = 0; y < size; y += Math.max(8 * scale, 4)) {
+    ctx.fillRect(0, y, size, 3 * scale);
   }
 
   // 3. Stitched border edge
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
-  ctx.lineWidth = 8;
-  ctx.strokeRect(6, 6, 500, 500);
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.lineWidth = Math.max(4 * scale, 2);
+  ctx.strokeRect(4 * scale, 4 * scale, size - 8 * scale, size - 8 * scale);
 
-  // 4. White Warehouse Stencil / Paper Label (GIANT & HIGH CONTRAST)
+  // 4. Strapping Bands (Rendered directly on canvas for 75% less GPU draw calls & VRAM)
+  ctx.fillStyle = '#18181b';
+  ctx.fillRect(0, 240 * scale, size, 28 * scale); // Horizontal center band
+  ctx.fillRect(80 * scale, 0, 24 * scale, size);  // Vertical band Left
+  ctx.fillRect(408 * scale, 0, 24 * scale, size); // Vertical band Right
+
+  // 5. White Warehouse Stencil / Paper Label (GIANT & HIGH CONTRAST)
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(36, 50, 440, 412);
+  ctx.fillRect(36 * scale, 50 * scale, 440 * scale, 412 * scale);
   ctx.strokeStyle = '#0f172a';
-  ctx.lineWidth = 8;
-  ctx.strokeRect(36, 50, 440, 412);
+  ctx.lineWidth = Math.max(6 * scale, 2);
+  ctx.strokeRect(36 * scale, 50 * scale, 440 * scale, 412 * scale);
 
   // Print BIG BOLD No. Gudang
   ctx.fillStyle = '#000000';
-  ctx.font = "900 125px 'Inter', sans-serif";
+  ctx.font = `900 ${Math.round(125 * scale)}px 'Inter', sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText(String(baleData.noGud), 256, 195);
+  ctx.fillText(String(baleData.noGud), 256 * scale, 195 * scale);
 
   // Print Grade and Weight
-  ctx.font = "bold 44px 'Inter', sans-serif";
+  ctx.font = `bold ${Math.round(44 * scale)}px 'Inter', sans-serif`;
   ctx.fillStyle = '#1e293b';
   const tagGrade = baleData.grade && baleData.grade !== 'UNGRADED' ? `GR: ${baleData.grade}` : '';
   const tagKg = (baleData.kg && baleData.kg !== '-') ? `${baleData.kg}kg` : '';
   const subInfo = [tagGrade, tagKg].filter(Boolean).join(' • ') || 'TEMBAKAU';
-  ctx.fillText(subInfo, 256, 295);
+  ctx.fillText(subInfo, 256 * scale, 295 * scale);
 
   // Print Barcode
   if (baleData.barkot && baleData.barkot !== '-') {
-    ctx.font = "bold 36px monospace";
+    ctx.font = `bold ${Math.round(36 * scale)}px monospace`;
     ctx.fillStyle = '#0284c7';
-    ctx.fillText(`*${baleData.barkot}*`, 256, 385);
+    ctx.fillText(`*${baleData.barkot}*`, 256 * scale, 385 * scale);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.minFilter = THREE.LinearFilter;
   baleTextureCache[cacheKey] = texture;
   return texture;
-}
-
-function addStrappingBands(mesh) {
-  // Realistic dual nylon strapping bands around tobacco bale
-  const bandMat = new THREE.MeshStandardMaterial({
-    color: 0x18181b, // Dark durable strapping band
-    roughness: 0.3,
-    metalness: 0.2
-  });
-
-  // 1. Horizontal center band
-  const hBandGeo = new THREE.BoxGeometry(BALE_WIDTH + 0.015, 0.04, BALE_DEPTH + 0.015);
-  const hBand = new THREE.Mesh(hBandGeo, bandMat);
-  hBand.position.set(0, 0, 0);
-  mesh.add(hBand);
-
-  // 2. Vertical band Left
-  const vBandGeo = new THREE.BoxGeometry(0.04, BALE_HEIGHT + 0.015, BALE_DEPTH + 0.015);
-  const vBand1 = new THREE.Mesh(vBandGeo, bandMat);
-  vBand1.position.set(-BALE_WIDTH * 0.28, 0, 0);
-  mesh.add(vBand1);
-
-  // 3. Vertical band Right
-  const vBand2 = new THREE.Mesh(vBandGeo, bandMat);
-  vBand2.position.set(BALE_WIDTH * 0.28, 0, 0);
-  mesh.add(vBand2);
 }
 
 function getBaleMaterial(bale, colorMode) {
@@ -1688,10 +1717,19 @@ function parseWorkbookToWarehouseData(wb) {
 // ==============================================================================
 // 7. RENDER LOOP
 // ==============================================================================
+let lastWidth = window.innerWidth;
+let lastHeight = window.innerHeight;
+
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  // Ignore micro-resizes on mobile scroll
+  if (Math.abs(w - lastWidth) < 10 && Math.abs(h - lastHeight) < 50) return;
+  lastWidth = w;
+  lastHeight = h;
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(w, h);
 }
 
 function animate() {
