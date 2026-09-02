@@ -448,6 +448,26 @@ function buildWarehouse3D(rawData) {
         let grade = masterInfo?.grade || 'UNGRADED';
         let status = masterInfo?.status || 'NORMAL';
 
+        // Block-specific overrides for duplicate bal numbers (e.g. barkot awal on Blok 6, transfer bal on Blok 1, 2)
+        const blockOverrides = {
+          '1_132': { barkot: '33744', grade: '56', kg: 40, status: 'SELESAI' },
+          '1_182': { barkot: '33743', grade: '55', kg: 30, status: 'SELESAI' },
+          '2_289': { barkot: '32277', grade: '65', kg: 47, status: 'SELESAI' },
+          '6_181': { barkot: '31736', grade: '65', kg: 33, status: 'SELESAI' },
+          '6_346': { barkot: '31161', grade: '60', kg: 42, status: 'SELESAI' },
+          '11_289': { barkot: '31701', grade: '62', kg: 47, status: 'SELESAI' },
+          '11_346': { barkot: '30624', grade: '52', kg: 34, status: 'SELESAI' },
+          '13_132': { barkot: '30328', grade: '55', kg: 39, status: 'SELESAI' },
+          '14_181': { barkot: '32278', grade: '66', kg: 33, status: 'SELESAI' },
+        };
+        const override = blockOverrides[`${bId}_${noGudStr}`];
+        if (override) {
+          barkot = override.barkot;
+          kg = override.kg;
+          grade = override.grade;
+          status = override.status;
+        }
+
         // Calculate numeric stats
         totalBalesCount++;
         const numericKg = parseFloat(kg);

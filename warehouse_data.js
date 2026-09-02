@@ -12,12 +12,20 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
+          643,
+          640,
+          647,
+          637,
+          638,
+          644
+        ],
+        [
+          24,
           182,
-          "",
-          "",
-          "",
-          "",
-          ""
+          132,
+          634,
+          636,
+          639
         ],
         [
           305,
@@ -65,12 +73,20 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
+          631,
+          631,
+          646,
+          648,
+          645,
+          602
+        ],
+        [
           289,
-          "",
-          "",
-          "",
-          "",
-          ""
+          633,
+          649,
+          641,
+          601,
+          642
         ],
         [
           125,
@@ -118,12 +134,20 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
-          132,
-          "",
-          "",
-          "",
-          "",
-          ""
+          625,
+          608,
+          627,
+          628,
+          652,
+          661
+        ],
+        [
+          632,
+          626,
+          629,
+          630,
+          657,
+          655
         ],
         [
           230,
@@ -170,6 +194,22 @@ window.WAREHOUSE_DATA = {
         "Saf 6"
       ],
       "data": [
+        [
+          "",
+          "",
+          656,
+          659,
+          662,
+          651
+        ],
+        [
+          "",
+          660,
+          654,
+          658,
+          650,
+          653
+        ],
         [
           100,
           492,
@@ -265,11 +305,11 @@ window.WAREHOUSE_DATA = {
           388,
           367,
           349,
-          336,
+          346,
           300
         ],
         [
-          129,
+          181,
           472,
           334,
           315,
@@ -4116,19 +4156,19 @@ window.WAREHOUSE_DATA = {
     },
     "601": {
       "no_gud": 601,
-      "barkot": "",
-      "grade": "65",
-      "kg": "",
-      "status": "-",
-      "ket": "2026-08-30"
+      "barkot": "31993",
+      "grade": "70",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
     },
     "602": {
       "no_gud": 602,
-      "barkot": "",
-      "grade": "65",
-      "kg": "",
-      "status": "-",
-      "ket": "2026-08-30"
+      "barkot": "35339",
+      "grade": "67",
+      "kg": 48,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
     },
     "603": {
       "no_gud": 603,
@@ -4172,11 +4212,11 @@ window.WAREHOUSE_DATA = {
     },
     "608": {
       "no_gud": 608,
-      "barkot": "",
-      "grade": "70",
-      "kg": 42.0,
-      "status": "-",
-      "ket": "2026-08-31"
+      "barkot": "35340",
+      "grade": "67",
+      "kg": 42,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
     },
     "609": {
       "no_gud": 609,
@@ -4262,7 +4302,7 @@ window.WAREHOUSE_DATA = {
       "no_gud": 619,
       "barkot": "35001",
       "grade": "66",
-      "kg": 36.0,
+      "kg": 36,
       "status": "SELESAI",
       "ket": "2026-08-31"
     },
@@ -4305,6 +4345,310 @@ window.WAREHOUSE_DATA = {
       "kg": 34.0,
       "status": "SELESAI",
       "ket": "2026-08-31"
+    },
+    "625": {
+      "no_gud": 625,
+      "barkot": "35088",
+      "grade": "70",
+      "kg": 44,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "626": {
+      "no_gud": 626,
+      "barkot": "31989",
+      "grade": "72",
+      "kg": 43,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "627": {
+      "no_gud": 627,
+      "barkot": "31990",
+      "grade": "72",
+      "kg": 41,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "628": {
+      "no_gud": 628,
+      "barkot": "31995",
+      "grade": "70",
+      "kg": 40,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "629": {
+      "no_gud": 629,
+      "barkot": "31994",
+      "grade": "72",
+      "kg": 39,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "630": {
+      "no_gud": 630,
+      "barkot": "35082",
+      "grade": "70",
+      "kg": 30,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "631": {
+      "no_gud": 631,
+      "barkot": "35087",
+      "grade": "66",
+      "kg": 34,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "632": {
+      "no_gud": 632,
+      "barkot": "35079",
+      "grade": "70",
+      "kg": 37,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "633": {
+      "no_gud": 633,
+      "barkot": "35078",
+      "grade": "68",
+      "kg": 36,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "634": {
+      "no_gud": 634,
+      "barkot": "35080",
+      "grade": "66",
+      "kg": 45,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "635": {
+      "no_gud": 635,
+      "barkot": "35663",
+      "grade": "63",
+      "kg": 44,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "636": {
+      "no_gud": 636,
+      "barkot": "35661",
+      "grade": "64",
+      "kg": 42,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "637": {
+      "no_gud": 637,
+      "barkot": "35729",
+      "grade": "54",
+      "kg": 49,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "638": {
+      "no_gud": 638,
+      "barkot": "35732",
+      "grade": "57",
+      "kg": 39,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "639": {
+      "no_gud": 639,
+      "barkot": "35731",
+      "grade": "54",
+      "kg": 41,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "640": {
+      "no_gud": 640,
+      "barkot": "35730",
+      "grade": "60",
+      "kg": 42,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "641": {
+      "no_gud": 641,
+      "barkot": "35734",
+      "grade": "57",
+      "kg": 37,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "642": {
+      "no_gud": 642,
+      "barkot": "35662",
+      "grade": "57",
+      "kg": 34,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "643": {
+      "no_gud": 643,
+      "barkot": "35736",
+      "grade": "53",
+      "kg": 46,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "644": {
+      "no_gud": 644,
+      "barkot": "35733",
+      "grade": "52",
+      "kg": 47,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "645": {
+      "no_gud": 645,
+      "barkot": "35735",
+      "grade": "53",
+      "kg": 43,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "646": {
+      "no_gud": 646,
+      "barkot": "33860",
+      "grade": "52",
+      "kg": 42,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "647": {
+      "no_gud": 647,
+      "barkot": "33862",
+      "grade": "52",
+      "kg": 39,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "648": {
+      "no_gud": 648,
+      "barkot": "33861",
+      "grade": "52",
+      "kg": 40,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "649": {
+      "no_gud": 649,
+      "barkot": "33863",
+      "grade": "52",
+      "kg": 38,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "650": {
+      "no_gud": 650,
+      "barkot": "35739",
+      "grade": "56",
+      "kg": 30,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "651": {
+      "no_gud": 651,
+      "barkot": "35738",
+      "grade": "56",
+      "kg": 41,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "652": {
+      "no_gud": 652,
+      "barkot": "35737",
+      "grade": "56",
+      "kg": 37,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "653": {
+      "no_gud": 653,
+      "barkot": "35741",
+      "grade": "55",
+      "kg": 32,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "654": {
+      "no_gud": 654,
+      "barkot": "35081",
+      "grade": "68",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "655": {
+      "no_gud": 655,
+      "barkot": "31991",
+      "grade": "67",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "656": {
+      "no_gud": 656,
+      "barkot": "31992",
+      "grade": "70",
+      "kg": 31,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "657": {
+      "no_gud": 657,
+      "barkot": "35740",
+      "grade": "57",
+      "kg": 39,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "658": {
+      "no_gud": 658,
+      "barkot": "35083",
+      "grade": "70",
+      "kg": 33,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "659": {
+      "no_gud": 659,
+      "barkot": "35084",
+      "grade": "67",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "660": {
+      "no_gud": 660,
+      "barkot": "35086",
+      "grade": "70",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "661": {
+      "no_gud": 661,
+      "barkot": "35085",
+      "grade": "68",
+      "kg": 50,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
+    },
+    "662": {
+      "no_gud": 662,
+      "barkot": "35341",
+      "grade": "67",
+      "kg": 45,
+      "status": "SELESAI",
+      "ket": "2026-09-01"
     }
   }
 };

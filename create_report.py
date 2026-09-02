@@ -125,21 +125,50 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
         for r in range(5, ws_m.max_row + 1):
             update_entry(ws_m.cell(r, 3).value, ws_m.cell(r, 4).value, ws_m.cell(r, 5).value, ws_m.cell(r, 6).value, ws_m.cell(r, 7).value, ws_m.cell(r, 8).value)
 
-    # Custom / User Overrides
     custom_overrides = {
         '259': {'no_gud': 259, 'barkot': '30164', 'grade': '55', 'kg': 55, 'status': 'SELESAI', 'ket': ''},
     }
     for k, v in custom_overrides.items():
         master_dict[k] = v
-
     return master_dict
 
 master_bal_dict = load_master_database('Dokumen_Rekap_NoGud_Barkot_Kg.xlsx')
 
-def lookup_bal_info(val):
+# Custom block-specific or positional overrides for duplicate No Gudang
+block_bal_overrides = {
+    (1, 132): {'barkot': '33744', 'grade': '56', 'kg': 40},
+    (1, '132'): {'barkot': '33744', 'grade': '56', 'kg': 40},
+    (1, 182): {'barkot': '33743', 'grade': '55', 'kg': 30},
+    (1, '182'): {'barkot': '33743', 'grade': '55', 'kg': 30},
+    (2, 289): {'barkot': '32277', 'grade': '65', 'kg': 47},
+    (2, '289'): {'barkot': '32277', 'grade': '65', 'kg': 47},
+    (6, 181): {'barkot': '31736', 'grade': '65', 'kg': 33},
+    (6, '181'): {'barkot': '31736', 'grade': '65', 'kg': 33},
+    (6, 346): {'barkot': '31161', 'grade': '60', 'kg': 42},
+    (6, '346'): {'barkot': '31161', 'grade': '60', 'kg': 42},
+    (11, 289): {'barkot': '31701', 'grade': '62', 'kg': 47},
+    (11, '289'): {'barkot': '31701', 'grade': '62', 'kg': 47},
+    (11, 346): {'barkot': '30624', 'grade': '52', 'kg': 34},
+    (11, '346'): {'barkot': '30624', 'grade': '52', 'kg': 34},
+    (13, 132): {'barkot': '30328', 'grade': '55', 'kg': 39},
+    (13, '132'): {'barkot': '30328', 'grade': '55', 'kg': 39},
+    (14, 181): {'barkot': '32278', 'grade': '66', 'kg': 33},
+    (14, '181'): {'barkot': '32278', 'grade': '66', 'kg': 33},
+}
+
+def lookup_bal_info(val, block_num=None):
     if val is None or val == '':
         return '', '', '', ''
     s = str(val).strip()
+
+    if block_num is not None:
+        if (block_num, val) in block_bal_overrides:
+            o = block_bal_overrides[(block_num, val)]
+            return val, o['barkot'], o['kg'], o['grade']
+        if (block_num, s) in block_bal_overrides:
+            o = block_bal_overrides[(block_num, s)]
+            return val, o['barkot'], o['kg'], o['grade']
+
     if s in master_bal_dict:
         m = master_bal_dict[s]
         return val, m['barkot'], m['kg'], m['grade']
@@ -175,7 +204,8 @@ blocks_data = {
         "title": "BLOK 01",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [182, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [643, 640, 647, 637, 638, 644], # T6 (Atas)
+            [24,  182, 132, 634, 636, 639], # T5
             [305, 18,  520, 144, 234, 274], # T4
             [508, 214, 460, 462, 516, 123], # T3
             [283, 23,  467, 509, 177, 193], # T2
@@ -186,7 +216,8 @@ blocks_data = {
         "title": "BLOK 02",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [289, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [631, 631, 646, 648, 645, 602], # T6 (Atas)
+            [289, 633, 649, 641, 601, 642], # T5
             [125, 444, 158, 448, 108, 112], # T4
             [493, 439, 438, 511, 171, 124], # T3
             [183, 368, 464, 491, 469, 504], # T2
@@ -197,7 +228,8 @@ blocks_data = {
         "title": "BLOK 03",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [132, "",   "",   "",   "",   ""  ], # T5 (Atas)
+            [625, 608, 627, 628, 652, 661], # T6 (Atas)
+            [632, 626, 629, 630, 657, 655], # T5
             [230, 199, 503, 495, 32,  437], # T4
             [180, 473, 432, 456, 282, 91 ], # T3
             [222, 217, 502, 440, 487, 107], # T2
@@ -208,7 +240,9 @@ blocks_data = {
         "title": "BLOK 04",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [100, 492, 226, 506, 374, 370], # T4 (Atas)
+            ["",  "",   656, 659, 662, 651], # T6 (Atas)
+            ["",  660, 654, 658, 650, 653], # T5
+            [100, 492, 226, 506, 374, 370], # T4
             [500, 436, 475, 201, 399, 111], # T3
             [498, 501, 130, 489, 514, 19],  # T2
             [466, 447, 431, 277, 496, 468], # T1 (Dasar)
@@ -228,8 +262,8 @@ blocks_data = {
         "title": "BLOK 06",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [219, 388, 367, 349, 336, 300], # T4 (Atas)
-            [129, 472, 334, 315, 387, 515], # T3
+            [219, 388, 367, 349, 346, 300], # T4 (Atas)
+            [181, 472, 334, 315, 387, 515], # T3
             [29,  423, 389, 365, 263, 458], # T2
             [624, 211, 258, 433, 398, 122], # T1 (Dasar)
         ]
@@ -511,7 +545,7 @@ for b_idx in range(1, 17):
             row_vals = b["data"][data_idx]
             data_idx += 1
             for s_idx, val in enumerate(row_vals):
-                no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val)
+                no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val, b_idx)
                 col_s = start_col + 1 + (s_idx * 3)
                 
                 # Col 1: No Gud
@@ -685,7 +719,7 @@ for b_num in range(1, 17):
     # Baris Data Terisi di Bagian Bawah
     for r_idx, row_data in enumerate(matrix):
         for s_idx, val in enumerate(row_data):
-            no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val)
+            no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val, b_num)
             c_base = (s_idx * 3) + 1
             
             # No Gud
@@ -770,7 +804,7 @@ for b_num in range(1, 17):
     total_kg_blok = 0
     for row in b["data"]:
         for val in row:
-            no, barkot, kg, grade = lookup_bal_info(val)
+            no, barkot, kg, grade = lookup_bal_info(val, b_num)
             if isinstance(kg, (int, float)):
                 total_kg_blok += kg
             elif str(kg).isdigit():
@@ -838,7 +872,7 @@ for b_num in range(1, 17):
                 continue
             r_row += 1
             saf_name = b["headers"][c_idx]
-            no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val)
+            no_gud_val, barkot_val, kg_val, grade_val = lookup_bal_info(val, b_num)
             m_status = master_bal_dict.get(str(val).strip(), {}).get('status', 'SELESAI' if barkot_val not in ['-', ''] else '-')
             
             ws3.cell(r_row, 2, item_idx).alignment = align_center
