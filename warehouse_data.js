@@ -23,7 +23,7 @@ window.WAREHOUSE_DATA = {
           24,
           182,
           132,
-          634,
+          635,
           636,
           639
         ],
@@ -73,7 +73,7 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
-          631,
+          634,
           631,
           646,
           648,
