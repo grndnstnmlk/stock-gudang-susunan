@@ -240,8 +240,8 @@ blocks_data = {
         "title": "BLOK 04",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            ["",  "",   656, 659, 662, 651], # T6 (Atas)
-            ["",  660, 654, 658, 650, 653], # T5
+            [683, 686, 656, 659, 662, 651], # T6 (Atas)
+            [684, 660, 654, 658, 650, 653], # T5
             [100, 492, 226, 506, 374, 370], # T4
             [500, 436, 475, 201, 399, 111], # T3
             [498, 501, 130, 489, 514, 19],  # T2
@@ -252,7 +252,9 @@ blocks_data = {
         "title": "BLOK 05",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [412, 430, 451, 490, 518, 4],   # T4 (Atas)
+            [685, 240, 212, 666, 664, 37],  # T6 (Atas)
+            [668, 239, 362, 665, 667, 663], # T5
+            [412, 430, 451, 490, 518, 4],   # T4
             [257, 386, 246, 241, 313, 260], # T3
             [381, 224, 397, 245, 413, 272], # T2
             [499, 210, 309, 373, 332, 405], # T1 (Dasar)
@@ -262,7 +264,9 @@ blocks_data = {
         "title": "BLOK 06",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [219, 388, 367, 349, 346, 300], # T4 (Atas)
+            [672, 671, 676, 674, 678, 679], # T6 (Atas)
+            [673, 670, 677, 675, 699, 37],  # T5
+            [219, 388, 367, 349, 346, 300], # T4
             [181, 472, 334, 315, 387, 515], # T3
             [29,  423, 389, 365, 263, 458], # T2
             [624, 211, 258, 433, 398, 122], # T1 (Dasar)
@@ -272,7 +276,9 @@ blocks_data = {
         "title": "BLOK 07",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [616, 606, 318, 427, 395, 311], # T4 (Atas)
+            [681, "",  "",  "",  "",  "" ],  # T6 (Atas)
+            [680, "",  "",  "",  "",  "" ],  # T5
+            [616, 606, 318, 427, 395, 311], # T4
             [617, 593, 380, 350, 330, 329], # T3
             [619, 600, 377, 326, 339, 375], # T2
             [618, 589, 320, 384, 371, 352], # T1 (Dasar)
@@ -921,11 +927,33 @@ target_files = [
     r'C:\Users\xenov\Downloads\stock gudang susunan\Stock_Susunan_Bal_30_Agustus_2026.xlsx'
 ]
 
-for target in target_files:
+for target in set(target_files):
     try:
         wb.save(target)
         print(f'Successfully saved to {target}')
     except Exception as e:
         print(f'Note: Could not save to {target}: {e}')
+
+
+# ==============================================================================
+# 5. SYNC WAREHOUSE_DATA.JSON & WAREHOUSE_DATA.JS
+# ==============================================================================
+import json
+try:
+    wh_data = {}
+    if os.path.exists('warehouse_data.json'):
+        with open('warehouse_data.json', 'r', encoding='utf-8') as f:
+            wh_data = json.load(f)
+    wh_data['blocks'] = blocks_data
+    if 'master' not in wh_data:
+        wh_data['master'] = master_bal_dict
+        
+    with open('warehouse_data.json', 'w', encoding='utf-8') as f:
+        json.dump(wh_data, f, indent=2)
+    with open('warehouse_data.js', 'w', encoding='utf-8') as f:
+        f.write(f"window.WAREHOUSE_DATA = {json.dumps(wh_data, indent=2)};")
+    print('warehouse_data.json and warehouse_data.js successfully synchronized!')
+except Exception as e:
+    print(f'Note: Could not sync web data files: {e}')
 
 print('Report generation with Barkot, Kg, and Block Arah completed successfully!')
