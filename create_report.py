@@ -360,7 +360,9 @@ blocks_data = {
         "title": "BLOK 14",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [796, 792, 797, 807, 798, 801], # T6 (Atas)
+            ["",  "",  "",  "",  "",  825], # T8 (Atas)
+            ["",  "",  "",  "",  857, 820], # T7
+            [796, 792, 797, 807, 798, 801], # T6
             [791, 795, 790, 802, 800, 760], # T5
             [532, 571, 273, 449, 441, 181], # T4
             [482, 13,  219, 232, 454, 457], # T3
@@ -372,8 +374,11 @@ blocks_data = {
         "title": "BLOK 15",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            ["",  "",  "",  "",  "",  793], # T6 (Atas)
-            ["",  "",  "",  "",  "",  794], # T5
+            [822, "",  "",  "",  "",  "" ], # T9 (Atas)
+            [824, 832, 821, 840, 835, 815], # T8
+            [823, 831, 838, 837, 818, 812], # T7
+            [814, 817, 845, 855, 854, 793], # T6
+            [810, 816, 849, 856, 853, 794], # T5
             [525, 537, 276, 564, 149, 443], # T4
             [521, 536, 575, 223, 220, 435], # T3
             [481, 566, 559, 572, 356, 285], # T2
@@ -384,10 +389,14 @@ blocks_data = {
         "title": "BLOK 16",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [113, 552, 555, 558, 549, 307], # T4 (Atas)
+            ["",  "",  841, 836, "",  839], # T8 (Atas)
+            ["",  842, 843, 834, 808, 813], # T7
+            [828, 809, 811, 847, 848, 852], # T6
+            [827, 819, 846, 844, 851, 850], # T5
+            [113, 552, 555, 558, 549, 307], # T4
             [480, 548, 542, 557, 544, 561], # T3
             [523, 539, 547, 554, 540, 538], # T2
-            [524, 551, 546, 573, 64, 560],  # T1 (Dasar)
+            [524, 551, 546, 573, 64,  560], # T1 (Dasar)
         ]
     },
 }
@@ -544,9 +553,10 @@ for b_idx in range(1, 17):
     ws_full.row_dimensions[curr_r + 1].height = 15
     curr_r += 2
     
-    # 3. Data Rows (7 Tingkat)
+    # 3. Data Rows (Dynamic max tiers, minimum 7)
     num_data_rows = len(b["data"])
-    block_tingkat_info = [('T7 (Atas)' if t == 7 else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(7, 0, -1)]
+    max_t = max(7, num_data_rows)
+    block_tingkat_info = [(f'T{t} (Atas)' if t == max_t else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(max_t, 0, -1)]
     data_idx = 0
     for t_name, is_empty in block_tingkat_info:
         # Tingkat label
@@ -667,9 +677,10 @@ for b_idx in range(1, 17):
         c_cell.border = border_all_black
     ws_portrait.row_dimensions[curr_r].height = 20
     
-    # Data Rows (7 Tiers)
+    # Data Rows (Dynamic Tiers)
     num_data_rows = len(b["data"])
-    block_tingkat_info = [('T7 (Atas)' if t == 7 else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(7, 0, -1)]
+    max_t = max(7, num_data_rows)
+    block_tingkat_info = [(f'T{t} (Atas)' if t == max_t else ('T1 (Dasar)' if t == 1 else f'T{t}'), t > num_data_rows) for t in range(max_t, 0, -1)]
     data_idx = 0
     for t_name, is_empty in block_tingkat_info:
         curr_r += 1
@@ -730,9 +741,11 @@ for b_num in range(1, 17):
     num_saf = len(blocks_data[b_num]["headers"])
     total_grid_cols = num_saf * 3
     
-    num_empty = 7 - len(matrix)
+    num_rows = len(matrix)
+    max_block_rows = max(7, num_rows)
+    num_empty = max(0, max_block_rows - num_rows)
     
-    # Baris Kosong di Bagian Atas (Tingkat 7, Tingkat 6, dst.)
+    # Baris Kosong di Bagian Atas
     for r_empty in range(num_empty):
         for c_idx in range(total_grid_cols):
             cell = ws2.cell(row=grid_start_r + r_empty, column=c_idx + 1, value=None)
@@ -765,14 +778,14 @@ for b_num in range(1, 17):
             
     # Label Blok di sisi kanan
     b_col = total_grid_cols + 2
-    b_cell = ws2.cell(row=grid_start_r + 3, column=b_col, value=b_num)
+    b_cell = ws2.cell(row=grid_start_r + (max_block_rows // 2), column=b_col, value=b_num)
     b_cell.font = font_main_title
     b_cell.alignment = align_center
     
     if b_num in [4, 8, 12]:
-        ws2.row_breaks.append(Break(id=grid_start_r + 6))
+        ws2.row_breaks.append(Break(id=grid_start_r + max_block_rows - 1))
         
-    grid_start_r += 7
+    grid_start_r += max_block_rows
 
 for col in range(1, 22):
     col_letter = get_column_letter(col)
@@ -817,9 +830,9 @@ r_row = 8
 for b_num in range(1, 17):
     b = blocks_data[b_num]
     num_saf = len(b["headers"])
-    kap_blok = num_saf * 7
+    kap_blok = num_saf * max(7, len(b["data"]))
     terisi_blok = sum(1 for row in b["data"] for val in row if val not in [None, ''])
-    kosong_blok = kap_blok - terisi_blok
+    kosong_blok = max(0, kap_blok - terisi_blok)
     arah_text = f"Saf 1 Utara - Saf {num_saf} Selatan"
     
     # Hitung total kg blok
