@@ -202,26 +202,26 @@ def lookup_bal_info(val, block_num=None):
 blocks_data = {
     1: {
         "title": "BLOK 01",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
+        "headers": ["Saf -3", "Saf -2", "Saf -1", "Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [643, 640, 647, 637, 638, 644], # T6 (Atas)
-            [24,  182, 132, 635, 636, 639], # T5
-            [305, 18,  520, 144, 234, 274], # T4
-            [508, 214, 460, 462, 516, 123], # T3
-            [283, 23,  467, 509, 177, 193], # T2
-            [494, 497, 453, 474, 116, 310], # T1 (Dasar)
+            ["",  "",  "",  643, 640, 647, 637, 638, 644], # T6 (Atas)
+            ["",  "",  "",  24,  182, 132, 635, 636, 639], # T5
+            ["",  "",  "",  305, 18,  520, 144, 234, 274], # T4
+            [902, 900, 916, 508, 214, 460, 462, 516, 123], # T3
+            [901, 864, 915, 283, 23,  467, 509, 177, 193], # T2
+            [859, 865, 914, 494, 497, 453, 474, 116, 310], # T1 (Dasar)
         ]
     },
     2: {
         "title": "BLOK 02",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
+        "headers": ["Saf -1", "Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [634, 631, 646, 648, 645, 602], # T6 (Atas)
-            [289, 633, 649, 641, 601, 642], # T5
-            [125, 444, 158, 448, 108, 112], # T4
-            [493, 439, 438, 511, 171, 124], # T3
-            [183, 368, 464, 491, 469, 504], # T2
-            [164, 288, 510, 227, 416, 99 ], # T1 (Dasar)
+            ["",  634, 631, 646, 648, 645, 602], # T6 (Atas)
+            ["",  289, 633, 649, 641, 601, 642], # T5
+            ["",  125, 444, 158, 448, 108, 112], # T4
+            ["",  493, 439, 438, 511, 171, 124], # T3
+            [912, 183, 368, 464, 491, 469, 504], # T2
+            [899, 164, 288, 510, 227, 416, 99 ], # T1 (Dasar)
         ]
     },
     3: {
@@ -512,7 +512,7 @@ for b_idx in range(1, 17):
     end_col = start_col + total_cols - 1
     
     # 1. Block Header Banner dengan Keterangan Arah
-    banner_text = f"{b['title']} (Saf 1 Utara - Saf {num_saf} Selatan)"
+    banner_text = f"{b['title']} ({b['headers'][0]} Utara - {b['headers'][-1]} Selatan)"
     ws_full.merge_cells(start_row=curr_r, start_column=start_col, end_row=curr_r, end_column=end_col)
     hdr_cell = ws_full.cell(curr_r, start_col, banner_text)
     hdr_cell.font = font_block_hdr
@@ -655,8 +655,8 @@ for b_idx in range(1, 17):
     num_cols = len(b["headers"])
     end_col = 2 + num_cols
     
-    # Block Header Banner (BLOK 01 (Saf 1 Utara - Saf 6 Selatan))
-    banner_text = f"{b['title']} (Saf 1 Utara - Saf {num_cols} Selatan)"
+    # Block Header Banner (BLOK 01 (Saf -3 Utara - Saf 6 Selatan))
+    banner_text = f"{b['title']} ({b['headers'][0]} Utara - {b['headers'][-1]} Selatan)"
     ws_portrait.merge_cells(start_row=curr_r, start_column=2, end_row=curr_r, end_column=end_col)
     hdr_cell = ws_portrait.cell(curr_r, 2, banner_text)
     hdr_cell.font = font_block_hdr
@@ -726,8 +726,9 @@ for b_idx in range(1, 17):
 # Column widths for Portrait Sheet
 ws_portrait.column_dimensions['A'].width = 2
 ws_portrait.column_dimensions['B'].width = 12.0
-for c in ['C', 'D', 'E', 'F', 'G', 'H']:
-    ws_portrait.column_dimensions[c].width = 11.5
+max_cols_used = max(len(blocks_data[b_i]["headers"]) for b_i in blocks_data)
+for c_i in range(3, 3 + max_cols_used):
+    ws_portrait.column_dimensions[get_column_letter(c_i)].width = 11.5
 
 # ==============================================================================
 # SHEET 3: FORMAT GRID (c.xlsx) - DENGAN NO GUD, BARKOT, DAN KG
@@ -981,7 +982,8 @@ try:
             wh_data = json.load(f)
     wh_data['blocks'] = blocks_data
     if 'master' not in wh_data:
-        wh_data['master'] = master_bal_dict
+        wh_data['master'] = {}
+    wh_data['master'].update(master_bal_dict)
         
     with open('warehouse_data.json', 'w', encoding='utf-8') as f:
         json.dump(wh_data, f, indent=2)

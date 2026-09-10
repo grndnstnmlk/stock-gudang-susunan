@@ -3,6 +3,9 @@ window.WAREHOUSE_DATA = {
     "1": {
       "title": "BLOK 01",
       "headers": [
+        "Saf -3",
+        "Saf -2",
+        "Saf -1",
         "Saf 1",
         "Saf 2",
         "Saf 3",
@@ -12,6 +15,9 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
+          "",
+          "",
+          "",
           643,
           640,
           647,
@@ -20,6 +26,9 @@ window.WAREHOUSE_DATA = {
           644
         ],
         [
+          "",
+          "",
+          "",
           24,
           182,
           132,
@@ -28,6 +37,9 @@ window.WAREHOUSE_DATA = {
           639
         ],
         [
+          "",
+          "",
+          "",
           305,
           18,
           520,
@@ -36,6 +48,9 @@ window.WAREHOUSE_DATA = {
           274
         ],
         [
+          902,
+          900,
+          916,
           508,
           214,
           460,
@@ -44,6 +59,9 @@ window.WAREHOUSE_DATA = {
           123
         ],
         [
+          901,
+          864,
+          915,
           283,
           23,
           467,
@@ -52,6 +70,9 @@ window.WAREHOUSE_DATA = {
           193
         ],
         [
+          859,
+          865,
+          914,
           494,
           497,
           453,
@@ -64,6 +85,7 @@ window.WAREHOUSE_DATA = {
     "2": {
       "title": "BLOK 02",
       "headers": [
+        "Saf -1",
         "Saf 1",
         "Saf 2",
         "Saf 3",
@@ -73,6 +95,7 @@ window.WAREHOUSE_DATA = {
       ],
       "data": [
         [
+          "",
           634,
           631,
           646,
@@ -81,6 +104,7 @@ window.WAREHOUSE_DATA = {
           602
         ],
         [
+          "",
           289,
           633,
           649,
@@ -89,6 +113,7 @@ window.WAREHOUSE_DATA = {
           642
         ],
         [
+          "",
           125,
           444,
           158,
@@ -97,6 +122,7 @@ window.WAREHOUSE_DATA = {
           112
         ],
         [
+          "",
           493,
           439,
           438,
@@ -105,6 +131,7 @@ window.WAREHOUSE_DATA = {
           124
         ],
         [
+          912,
           183,
           368,
           464,
@@ -113,6 +140,7 @@ window.WAREHOUSE_DATA = {
           504
         ],
         [
+          899,
           164,
           288,
           510,
@@ -6380,11 +6408,11 @@ window.WAREHOUSE_DATA = {
     },
     "859": {
       "no_gud": 859,
-      "barkot": "",
+      "barkot": "124853",
       "grade": "72",
-      "kg": 44,
-      "status": "-",
-      "ket": "2026-09-08"
+      "kg": 44.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
     },
     "860": {
       "no_gud": 860,
@@ -6420,19 +6448,19 @@ window.WAREHOUSE_DATA = {
     },
     "864": {
       "no_gud": 864,
-      "barkot": "",
+      "barkot": "124851",
       "grade": "72",
-      "kg": 45,
-      "status": "-",
-      "ket": "2026-09-08"
+      "kg": 45.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
     },
     "865": {
       "no_gud": 865,
-      "barkot": "",
+      "barkot": "124852",
       "grade": "72",
-      "kg": 40,
-      "status": "-",
-      "ket": "2026-09-08"
+      "kg": 40.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
     },
     "866": {
       "no_gud": 866,
@@ -6444,11 +6472,11 @@ window.WAREHOUSE_DATA = {
     },
     "867": {
       "no_gud": 867,
-      "barkot": "",
+      "barkot": "124586",
       "grade": "72",
-      "kg": 38,
-      "status": "-",
-      "ket": "2026-09-08"
+      "kg": 38.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
     },
     "868": {
       "no_gud": 868,
@@ -6476,11 +6504,11 @@ window.WAREHOUSE_DATA = {
     },
     "871": {
       "no_gud": 871,
-      "barkot": "",
+      "barkot": "124250",
       "grade": "72",
-      "kg": 50,
-      "status": "-",
-      "ket": "2026-09-08"
+      "kg": 50.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
     },
     "872": {
       "no_gud": 872,
@@ -6673,6 +6701,302 @@ window.WAREHOUSE_DATA = {
       "kg": 49,
       "status": "SELESAI",
       "ket": "2026-09-08"
+    },
+    "899": {
+      "no_gud": 899,
+      "barkot": "124854",
+      "grade": "72",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "900": {
+      "no_gud": 900,
+      "barkot": "124855",
+      "grade": "72",
+      "kg": 42.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "901": {
+      "no_gud": 901,
+      "barkot": "124856",
+      "grade": "72",
+      "kg": 38.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "902": {
+      "no_gud": 902,
+      "barkot": "124857",
+      "grade": "72",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "903": {
+      "no_gud": 903,
+      "barkot": "124526",
+      "grade": "60",
+      "kg": 39.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "904": {
+      "no_gud": 904,
+      "barkot": "124588",
+      "grade": "62",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "905": {
+      "no_gud": 905,
+      "barkot": "124587",
+      "grade": "68",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "907": {
+      "no_gud": 907,
+      "barkot": "33889",
+      "grade": "58",
+      "kg": 48.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "911": {
+      "no_gud": 911,
+      "barkot": "124808",
+      "grade": "68",
+      "kg": 49.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "912": {
+      "no_gud": 912,
+      "barkot": "124589",
+      "grade": "68",
+      "kg": 40.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "913": {
+      "no_gud": 913,
+      "barkot": "33890",
+      "grade": "60",
+      "kg": 36.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "914": {
+      "no_gud": 914,
+      "barkot": "124525",
+      "grade": "60",
+      "kg": 40.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "915": {
+      "no_gud": 915,
+      "barkot": "124523",
+      "grade": "60",
+      "kg": 48.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "916": {
+      "no_gud": 916,
+      "barkot": "124524",
+      "grade": "58",
+      "kg": 42.0,
+      "status": "SELESAI",
+      "ket": "2026-09-09"
+    },
+    "917": {
+      "no_gud": 917,
+      "barkot": "125244",
+      "grade": "72",
+      "kg": 48.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "918": {
+      "no_gud": 918,
+      "barkot": "125245",
+      "grade": "72",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "919": {
+      "no_gud": 919,
+      "barkot": "125057",
+      "grade": "72",
+      "kg": 40.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "920": {
+      "no_gud": 920,
+      "barkot": "125055",
+      "grade": "72",
+      "kg": 46.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "921": {
+      "no_gud": 921,
+      "barkot": "125242",
+      "grade": "72",
+      "kg": 40.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "922": {
+      "no_gud": 922,
+      "barkot": "125243",
+      "grade": "72",
+      "kg": 41.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "923": {
+      "no_gud": 923,
+      "barkot": "125058",
+      "grade": "72",
+      "kg": 44.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "924": {
+      "no_gud": 924,
+      "barkot": "125056",
+      "grade": "72",
+      "kg": 39.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "925": {
+      "no_gud": 925,
+      "barkot": "125059",
+      "grade": "72",
+      "kg": 42.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "926": {
+      "no_gud": 926,
+      "barkot": "125246",
+      "grade": "72",
+      "kg": 44.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "927": {
+      "no_gud": 927,
+      "barkot": "125061",
+      "grade": "72",
+      "kg": 35.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "928": {
+      "no_gud": 928,
+      "barkot": "125247",
+      "grade": "72",
+      "kg": 39.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "929": {
+      "no_gud": 929,
+      "barkot": "125248",
+      "grade": "72",
+      "kg": 32.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "930": {
+      "no_gud": 930,
+      "barkot": "",
+      "grade": "70",
+      "kg": 39.0,
+      "status": "-",
+      "ket": "2026-09-10"
+    },
+    "931": {
+      "no_gud": 931,
+      "barkot": "",
+      "grade": "70",
+      "kg": 30.0,
+      "status": "-",
+      "ket": "2026-09-10"
+    },
+    "932": {
+      "no_gud": 932,
+      "barkot": "125060",
+      "grade": "70",
+      "kg": 36.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "933": {
+      "no_gud": 933,
+      "barkot": "125062",
+      "grade": "70",
+      "kg": 38.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "934": {
+      "no_gud": 934,
+      "barkot": "124539",
+      "grade": "56",
+      "kg": 49.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "935": {
+      "no_gud": 935,
+      "barkot": "124538",
+      "grade": "56",
+      "kg": 45.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "936": {
+      "no_gud": 936,
+      "barkot": "124537",
+      "grade": "56",
+      "kg": 33.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "937": {
+      "no_gud": 937,
+      "barkot": "124536",
+      "grade": "56",
+      "kg": 36.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "938": {
+      "no_gud": 938,
+      "barkot": "125053",
+      "grade": "71",
+      "kg": 43.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
+    },
+    "939": {
+      "no_gud": 939,
+      "barkot": "125054",
+      "grade": "71",
+      "kg": 45.0,
+      "status": "SELESAI",
+      "ket": "2026-09-10"
     }
   }
 };
