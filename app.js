@@ -404,7 +404,20 @@ function buildWarehouse3D(rawData) {
     const headers = bInfo.headers; // Saf 1, Saf 2, etc.
     const numSaf = headers.length;
     const blockWidth = BALE_WIDTH + 0.2;
-    const blockDepth = numSaf * (BALE_DEPTH + BALE_GAP_Z) + 0.4;
+
+    const safSpacing = BALE_DEPTH + BALE_GAP_Z;
+    // Cari index 'Saf 1' di dalam headers (default 0 jika tidak ada)
+    const saf1Idx = headers.indexOf('Saf 1') >= 0 ? headers.indexOf('Saf 1') : 0;
+    
+    // Posisi Z standar untuk Saf 1 (agar semua Saf 1 di semua Blok 01 - 16 sejajar lurus)
+    // Untuk 6-saf standar, Saf 1 berada di -2.5 * safSpacing
+    const STANDARD_SAF1_Z = -2.5 * safSpacing;
+
+    // Rentang Z dari saf paling depan (misal Saf -3) hingga saf paling belakang (Saf 6)
+    const minSafZ = STANDARD_SAF1_Z - (saf1Idx * safSpacing);
+    const maxSafZ = STANDARD_SAF1_Z + ((numSaf - 1 - saf1Idx) * safSpacing);
+    const blockCenterZ = (minSafZ + maxSafZ) / 2;
+    const blockDepth = (maxSafZ - minSafZ) + BALE_DEPTH + 0.4;
 
     // 1. Block Floor Pad & Border
     const padGeo = new THREE.BoxGeometry(blockWidth, 0.08, blockDepth);
@@ -414,19 +427,19 @@ function buildWarehouse3D(rawData) {
       metalness: 0.2
     });
     const pad = new THREE.Mesh(padGeo, padMat);
-    pad.position.set(0, 0.04, 0);
+    pad.position.set(0, 0.04, blockCenterZ);
     pad.receiveShadow = true;
     blockGroup.add(pad);
 
     // Glowing border for Block
-    // 2. Marka Lantai Blok Flat di Depan Saf 1 (Menempel di lantai, tidak menghalangi pandangan)
+    // 2. Marka Lantai Blok Flat di Depan Saf Paling Depan
     const floorLabel = createFloorTextPlane(bInfo.title, blockWidth * 0.95, 0.7, {
       bgColor: 'rgba(14, 165, 233, 0.25)',
       borderColor: '#38bdf8',
       textColor: '#38bdf8',
       fontSize: 34
     });
-    floorLabel.position.set(0, 0.05, -(blockDepth / 2) - 0.45);
+    floorLabel.position.set(0, 0.05, minSafZ - (BALE_DEPTH / 2) - 0.45);
     blockGroup.add(floorLabel);
 
     // 3. Process Bale Grid in Block
@@ -477,8 +490,8 @@ function buildWarehouse3D(rawData) {
         gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
 
         // Spatial position inside block:
-        // Saf 1 di UTARA (Z negatif) -> Saf N di SELATAN (Z positif)
-        const safZ = (safIdx - (numSaf - 1) / 2) * (BALE_DEPTH + BALE_GAP_Z);
+        // Saf 1 selalu sejajar di STANDARD_SAF1_Z, Saf -1/-2/-3 bertambah ke depan (Utara / Z lebih negatif)
+        const safZ = STANDARD_SAF1_Z + (safIdx - saf1Idx) * safSpacing;
         const baseY = 0.08 + (layerLevel - 0.5) * (BALE_HEIGHT + BALE_GAP_Y);
 
         // Bale entity data
@@ -1448,26 +1461,33 @@ function renderAllBlocks2DGrid() {
   const container = document.getElementById('all-blocks-matrix-container');
   if (!container) return;
 
+  const raw = window.WAREHOUSE_DATA;
+  if (!raw || !raw.blocks) return;
+
   let html = '';
   for (let bId = 1; bId <= 16; bId++) {
     const blockBales = balesData.filter(b => b.blockId === bId);
     if (blockBales.length === 0) continue;
+    const bInfo = raw.blocks[String(bId)];
+    const headers = bInfo ? bInfo.headers : ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"];
 
     html += `
       <div class="block-section-card">
         <div class="block-section-title">
-          <i class="fa-solid fa-cubes-stacked"></i> BLOK ${String(bId).padStart(2, '0')} (Total: ${blockBales.length} Bal)
+          <i class="fa-solid fa-cubes-stacked"></i> ${bInfo ? bInfo.title : `BLOK ${String(bId).padStart(2, '0')}`} (Total: ${blockBales.length} Bal)
         </div>
         <table class="matrix-grid-table" style="font-size:11px;">
           <thead>
             <tr>
               <th style="width: 50px;">Tingkat</th>
-              <th>Saf 1 (Utara)</th>
-              <th>Saf 2</th>
-              <th>Saf 3</th>
-              <th>Saf 4</th>
-              <th>Saf 5</th>
-              <th>Saf 6 (Selatan)</th>
+    `;
+
+    headers.forEach((h, idx) => {
+      const suffix = (idx === 0) ? ' (Utara)' : (idx === headers.length - 1 ? ' (Selatan)' : '');
+      html += `<th>${h}${suffix}</th>`;
+    });
+
+    html += `
             </tr>
           </thead>
           <tbody>
@@ -1476,7 +1496,7 @@ function renderAllBlocks2DGrid() {
     const maxLvl = Math.max(5, ...blockBales.map(b => b.layerLevel));
     for (let lvl = maxLvl; lvl >= 1; lvl--) {
       html += `<tr><td style="font-weight:700; color:var(--text-muted);">T${lvl}</td>`;
-      for (let sIdx = 1; sIdx <= 6; sIdx++) {
+      for (let sIdx = 1; sIdx <= headers.length; sIdx++) {
         const found = blockBales.find(b => b.safIndex === sIdx && b.layerLevel === lvl);
         if (found) {
           const noGud = found.noGud;
