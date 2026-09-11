@@ -202,38 +202,38 @@ def lookup_bal_info(val, block_num=None):
 blocks_data = {
     1: {
         "title": "BLOK 01",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
+        "headers": ["Saf -3", "Saf -2", "Saf -1", "Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [643, 640, 647, 637, 638, 644], # T6 (Atas)
-            [24,  182, 132, 635, 636, 639], # T5
-            [305, 18,  520, 144, 234, 274], # T4
-            [508, 214, 460, 462, 516, 123], # T3
-            [283, 23,  467, 509, 177, 193], # T2
-            [494, 497, 453, 474, 116, 310], # T1 (Dasar)
+            ["",  "",  "",  643, 640, 647, 637, 638, 644], # T6 (Atas)
+            [594, "",  "",  24,  182, 132, 635, 636, 639], # T5
+            [107, 116, 318, 305, 18,  520, 144, 234, 274], # T4
+            [902, 900, 916, 508, 214, 460, 462, 516, 123], # T3
+            [901, 864, 915, 283, 23,  467, 509, 177, 193], # T2
+            [859, 865, 914, 494, 497, 453, 474, "",  310], # T1 (Dasar)
         ]
     },
     2: {
         "title": "BLOK 02",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
+        "headers": ["Saf -3", "Saf -2", "Saf -1", "Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [634, 631, 646, 648, 645, 602], # T6 (Atas)
-            [289, 633, 649, 641, 601, 642], # T5
-            [125, 444, 158, 448, 108, 112], # T4
-            [493, 439, 438, 511, 171, 124], # T3
-            [183, 368, 464, 491, 469, 504], # T2
-            [164, 288, 510, 227, 416, 99 ], # T1 (Dasar)
+            ["",  "",  "",  634, 631, 646, 648, 645, 602], # T6 (Atas)
+            ["",  "",  "",  289, 633, 649, 641, 601, 642], # T5
+            ["",  919, 924, 125, 444, 158, 448, 108, 112], # T4
+            ["",  926, 921, 493, 439, 438, 511, 171, 124], # T3
+            [928, 923, 912, 183, 368, 464, 491, 469, 504], # T2
+            [927, 703, 899, 164, 288, 510, 227, 416, 99 ], # T1 (Dasar)
         ]
     },
     3: {
         "title": "BLOK 03",
-        "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
+        "headers": ["Saf -3", "Saf -2", "Saf -1", "Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [625, 608, 627, 628, 652, 661], # T6 (Atas)
-            [632, 626, 629, 630, 657, 655], # T5
-            [230, 199, 503, 495, 32,  437], # T4
-            [180, 473, 432, 456, 282, 91 ], # T3
-            [222, 217, 502, 440, 487, 107], # T2
-            [408, 465, 296, 421, 463, 206], # T1 (Dasar)
+            ["",  "",  "",  625, 608, 627, 628, 652, 661], # T6 (Atas)
+            ["",  932, 937, 632, 626, 629, 630, 657, 655], # T5
+            ["",  934, 935, 230, 199, 503, 495, 32,  437], # T4
+            ["",  936, 920, 180, 473, 432, 456, 282, 91 ], # T3
+            [933, 939, 922, 222, 217, 502, 440, 487, "" ], # T2
+            [925, 938, 918, 408, 465, 296, 421, 463, 206], # T1 (Dasar)
         ]
     },
     4: {
@@ -278,7 +278,7 @@ blocks_data = {
         "data": [
             [681, "",  697, 695, 687, 690], # T6 (Atas)
             [680, 696, 693, 694, 688, 691], # T5
-            [616, 606, 318, 427, 395, 311], # T4
+            [616, 606, "",  427, 395, 311], # T4
             [617, 593, 380, 350, 330, 329], # T3
             [619, 600, 377, 326, 339, 375], # T2
             [618, 589, 320, 384, 371, 352], # T1 (Dasar)
@@ -289,7 +289,7 @@ blocks_data = {
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
             [711, 709, 701, 702, 700, 707], # T6 (Atas)
-            [706, 705, 698, 699, 703, 689], # T5
+            [706, 705, 698, 699, "",  689], # T5
             [620, 591, 267, 271, 90,  341], # T4
             [621, 588, 340, 382, 333, 265], # T3
             [623, 585, 425, 369, 383, 393], # T2
@@ -317,7 +317,7 @@ blocks_data = {
             [605, 597, 488, 344, 428, 470], # T4
             [609, 586, 420, 358, 50,  406], # T3
             [607, 590, 400, 390, 328, 366], # T2
-            [610, 594, 421, 351, 255, 392], # T1 (Dasar)
+            [610, "",  421, 351, 255, 392], # T1 (Dasar)
         ]
     },
     11: {
@@ -512,7 +512,7 @@ for b_idx in range(1, 17):
     end_col = start_col + total_cols - 1
     
     # 1. Block Header Banner dengan Keterangan Arah
-    banner_text = f"{b['title']} (Saf 1 Utara - Saf {num_saf} Selatan)"
+    banner_text = f"{b['title']} ({b['headers'][0]} Utara - {b['headers'][-1]} Selatan)"
     ws_full.merge_cells(start_row=curr_r, start_column=start_col, end_row=curr_r, end_column=end_col)
     hdr_cell = ws_full.cell(curr_r, start_col, banner_text)
     hdr_cell.font = font_block_hdr
@@ -656,7 +656,7 @@ for b_idx in range(1, 17):
     end_col = 2 + num_cols
     
     # Block Header Banner (BLOK 01 (Saf 1 Utara - Saf 6 Selatan))
-    banner_text = f"{b['title']} (Saf 1 Utara - Saf {num_cols} Selatan)"
+    banner_text = f"{b['title']} ({b['headers'][0]} Utara - {b['headers'][-1]} Selatan)"
     ws_portrait.merge_cells(start_row=curr_r, start_column=2, end_row=curr_r, end_column=end_col)
     hdr_cell = ws_portrait.cell(curr_r, 2, banner_text)
     hdr_cell.font = font_block_hdr
@@ -726,8 +726,9 @@ for b_idx in range(1, 17):
 # Column widths for Portrait Sheet
 ws_portrait.column_dimensions['A'].width = 2
 ws_portrait.column_dimensions['B'].width = 12.0
-for c in ['C', 'D', 'E', 'F', 'G', 'H']:
-    ws_portrait.column_dimensions[c].width = 11.5
+for col_i in range(3, 15):
+    col_l = get_column_letter(col_i)
+    ws_portrait.column_dimensions[col_l].width = 11.5
 
 # ==============================================================================
 # SHEET 3: FORMAT GRID (c.xlsx) - DENGAN NO GUD, BARKOT, DAN KG
@@ -793,7 +794,7 @@ for b_num in range(1, 17):
         
     grid_start_r += max_block_rows
 
-for col in range(1, 22):
+for col in range(1, 35):
     col_letter = get_column_letter(col)
     sub_type = (col - 1) % 3
     if sub_type == 0:
@@ -839,7 +840,7 @@ for b_num in range(1, 17):
     kap_blok = num_saf * max(7, len(b["data"]))
     terisi_blok = sum(1 for row in b["data"] for val in row if val not in [None, ''])
     kosong_blok = max(0, kap_blok - terisi_blok)
-    arah_text = f"Saf 1 Utara - Saf {num_saf} Selatan"
+    arah_text = f"{b['headers'][0]} Utara - {b['headers'][-1]} Selatan"
     
     # Hitung total kg blok
     total_kg_blok = 0
