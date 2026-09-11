@@ -240,36 +240,36 @@ blocks_data = {
         "title": "BLOK 04",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [683, 686, 656, 659, 662, 651], # T6 (Atas)
-            [684, 660, 654, 658, 650, 653], # T5
-            [100, 492, 226, 506, 374, 370], # T4
-            [500, 436, 475, 201, 399, 111], # T3
-            [498, 501, 130, 489, 514, 19],  # T2
-            [466, 447, 431, 277, 496, 468], # T1 (Dasar)
+            [656, 658, 659, 653, 651, 650], # T6 (Atas)
+            [660, 662, 665, 654, 605, 506], # T5
+            [225, 471, 313, 228, 221, 149], # T4
+            [166, 466, 178, 215, 307, 309], # T3
+            [279, 451, 442, 513, 461, 459], # T2
+            [304, 452, 458, 450, 449, 496], # T1 (Dasar)
         ]
     },
     5: {
         "title": "BLOK 05",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [685, 240, 212, 666, 664, 37],  # T6 (Atas)
-            [668, 239, 362, 665, 667, 663], # T5
-            [412, 430, 451, 490, 518, 4],   # T4
-            [257, 386, 246, 241, 313, 260], # T3
-            [381, 224, 397, 245, 413, 272], # T2
-            [499, 210, 309, 373, 332, 405], # T1 (Dasar)
+            [674, 675, 676, 677, 678, 679], # T6 (Atas)
+            [663, 673, 671, 667, 666, 664], # T5
+            [207, 213, 308, 519, 436, 457], # T4
+            [146, 224, 226, 489, 485, 490], # T3
+            [284, 216, 219, 498, 430, 472], # T2
+            [306, 229, 218, 454, 455, 486], # T1 (Dasar)
         ]
     },
     6: {
         "title": "BLOK 06",
         "headers": ["Saf 1", "Saf 2", "Saf 3", "Saf 4", "Saf 5", "Saf 6"],
         "data": [
-            [672, 671, 676, 674, 678, 679], # T6 (Atas)
-            [673, 670, 677, 675, 699, 37],  # T5
-            [219, 388, 367, 349, 346, 300], # T4
-            [181, 472, 334, 315, 387, 515], # T3
-            [29,  423, 389, 365, 263, 458], # T2
-            [624, 211, 258, 433, 398, 122], # T1 (Dasar)
+            [672, 670, 669, 668, "",  "" ], # T6 (Atas)
+            [686, 685, 684, 683, 682, 696], # T5
+            [431, 484, 492, 512, 514, 515], # T4
+            [505, 501, 429, 500, 499, 517], # T3
+            [476, 480, 479, 478, 477, 518], # T2
+            [481, 482, 483, 475, 360, 447], # T1 (Dasar)
         ]
     },
     7: {
@@ -655,7 +655,7 @@ for b_idx in range(1, 17):
     num_cols = len(b["headers"])
     end_col = 2 + num_cols
     
-    # Block Header Banner (BLOK 01 (Saf 1 Utara - Saf 6 Selatan))
+    # Block Header Banner (BLOK 01 (Saf -3 Utara - Saf 6 Selatan))
     banner_text = f"{b['title']} ({b['headers'][0]} Utara - {b['headers'][-1]} Selatan)"
     ws_portrait.merge_cells(start_row=curr_r, start_column=2, end_row=curr_r, end_column=end_col)
     hdr_cell = ws_portrait.cell(curr_r, 2, banner_text)
@@ -726,9 +726,9 @@ for b_idx in range(1, 17):
 # Column widths for Portrait Sheet
 ws_portrait.column_dimensions['A'].width = 2
 ws_portrait.column_dimensions['B'].width = 12.0
-for col_i in range(3, 15):
-    col_l = get_column_letter(col_i)
-    ws_portrait.column_dimensions[col_l].width = 11.5
+max_cols_used = max(len(blocks_data[b_i]["headers"]) for b_i in blocks_data)
+for c_i in range(3, 3 + max_cols_used):
+    ws_portrait.column_dimensions[get_column_letter(c_i)].width = 11.5
 
 # ==============================================================================
 # SHEET 3: FORMAT GRID (c.xlsx) - DENGAN NO GUD, BARKOT, DAN KG
@@ -978,11 +978,15 @@ import json
 try:
     wh_data = {}
     if os.path.exists('warehouse_data.json'):
-        with open('warehouse_data.json', 'r', encoding='utf-8') as f:
-            wh_data = json.load(f)
+        try:
+            with open('warehouse_data.json', 'r', encoding='utf-8') as f:
+                wh_data = json.load(f)
+        except Exception:
+            wh_data = {}
     wh_data['blocks'] = blocks_data
     if 'master' not in wh_data:
-        wh_data['master'] = master_bal_dict
+        wh_data['master'] = {}
+    wh_data['master'].update(master_bal_dict)
         
     with open('warehouse_data.json', 'w', encoding='utf-8') as f:
         json.dump(wh_data, f, indent=2)
