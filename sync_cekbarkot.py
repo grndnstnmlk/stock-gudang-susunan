@@ -53,6 +53,18 @@ def build_master_dict(records):
                 master_dict[k]["grade"] = grade
             if kg != "" and master_dict[k]["kg"] == "":
                 master_dict[k]["kg"] = kg
+
+    custom_overrides = {
+        '259': {'no_gud': 259, 'barkot': '30164', 'grade': '55', 'kg': 55, 'status': 'SELESAI', 'ket': ''},
+        '242': {'no_gud': '242', 'barkot': '', 'grade': '38', 'kg': 41.5, 'status': '-', 'ket': 'Sisa Bal'},
+        '287': {'no_gud': '287', 'barkot': '', 'grade': '42', 'kg': 37.2, 'status': '-', 'ket': 'Sisa Bal'},
+        '930/961': {'no_gud': '930/961', 'barkot': '125475', 'grade': '68', 'kg': 39.0, 'status': 'SELESAI', 'ket': '2026-09-11'},
+        '931/962': {'no_gud': '931/962', 'barkot': '125478', 'grade': '68', 'kg': 30.0, 'status': 'SELESAI', 'ket': '2026-09-11'},
+        '963/242': {'no_gud': '963/242', 'barkot': '125476', 'grade': '67', 'kg': 49.0, 'status': 'SELESAI', 'ket': '2026-09-11'},
+        '964/287': {'no_gud': '964/287', 'barkot': '125477', 'grade': '67', 'kg': 47.0, 'status': 'SELESAI', 'ket': '2026-09-11'},
+    }
+    for k, v in custom_overrides.items():
+        master_dict[k] = v
     return master_dict
 
 def update_excel_master_file(records, master_dict, output_path="Dokumen_Rekap_NoGud_Barkot_Kg.xlsx"):
@@ -104,7 +116,7 @@ def update_excel_master_file(records, master_dict, output_path="Dokumen_Rekap_No
         cell.border = border_all
     ws_master.row_dimensions[4].height = 24
     
-    sorted_no_guds = sorted([int(k) for k in master_dict.keys() if k.isdigit()] + [k for k in master_dict.keys() if not k.isdigit()])
+    sorted_no_guds = [str(k) for k in sorted([int(k) for k in master_dict.keys() if k.isdigit()])] + sorted([k for k in master_dict.keys() if not k.isdigit()])
     r_row = 5
     for idx, nogud_key in enumerate(sorted_no_guds, start=1):
         item = master_dict[str(nogud_key)]

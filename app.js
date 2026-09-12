@@ -456,6 +456,21 @@ function buildWarehouse3D(rawData) {
 
         // Lookup master metadata
         let masterInfo = master[noGudStr] || master[noGudStr.replace(/^0+/, '') || noGudStr];
+        if (!masterInfo && noGudStr.includes('/')) {
+          const parts = noGudStr.split('/').map(p => p.trim());
+          const infos = parts.map(p => master[p] || master[p.replace(/^0+/, '') || p]).filter(Boolean);
+          if (infos.length > 0) {
+            const bks = infos.map(i => i.barkot).filter(b => b && b !== '-');
+            const grs = infos.map(i => i.grade).filter(g => g && g !== 'UNGRADED');
+            const kgs = infos.map(i => i.kg).filter(k => k !== undefined && k !== '' && k !== '-');
+            masterInfo = {
+              barkot: bks.join('/') || '-',
+              grade: grs[grs.length - 1] || grs.join('/') || 'UNGRADED',
+              kg: kgs[kgs.length - 1] || kgs.join('/') || '-',
+              status: infos.some(i => i.status === 'SELESAI') ? 'SELESAI' : 'NORMAL'
+            };
+          }
+        }
         let barkot = masterInfo?.barkot || '-';
         let kg = masterInfo?.kg !== undefined && masterInfo?.kg !== '' ? masterInfo.kg : '-';
         let grade = masterInfo?.grade || 'UNGRADED';
