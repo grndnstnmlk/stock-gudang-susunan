@@ -261,15 +261,24 @@ async function fetchLiveSupabaseMaster(showNotification = false) {
   }
   
   try {
-    const url = `${SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc`;
-    const res = await fetch(url, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const records = await res.json();
+    let allRecords = [];
+    let offset = 0;
+    const limit = 1000;
+    while (true) {
+      const url = `${SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc&limit=${limit}&offset=${offset}`;
+      const res = await fetch(url, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const batch = await res.json();
+      allRecords.push(...batch);
+      if (batch.length < limit) break;
+      offset += limit;
+    }
+    const records = allRecords;
     
     const liveMaster = {};
     records.forEach(r => {

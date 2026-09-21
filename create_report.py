@@ -28,39 +28,47 @@ def load_master_database(master_filepath='Dokumen_Rekap_NoGud_Barkot_Kg.xlsx'):
     try:
         import urllib.request
         import json
-        url = f"{SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc"
-        headers = {
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": f"Bearer {SUPABASE_ANON_KEY}"
-        }
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=5) as response:
-            records = json.loads(response.read().decode("utf-8"))
-            for r in records:
-                no_gud = r.get("no_gud")
-                if not no_gud:
-                    continue
-                k = str(no_gud).strip()
-                barkot = str(r.get("barkot") or "").strip()
-                grade = str(r.get("grade") or "").strip()
-                kg = r.get("kg") if r.get("kg") is not None else ""
-                has_b = is_valid_barcode(barkot)
-                status = "SELESAI" if has_b else ("SELESAI" if r.get("is_done") else "-")
-                
-                if k not in master_dict or has_b:
-                    master_dict[k] = {
-                        "no_gud": no_gud,
-                        "barkot": barkot if has_b else "",
-                        "grade": grade or (master_dict[k]["grade"] if k in master_dict else ""),
-                        "kg": kg if kg != "" else (master_dict[k]["kg"] if k in master_dict else ""),
-                        "status": status,
-                        "ket": r.get("tanggal", "")
-                    }
-                else:
-                    if grade and not master_dict[k]["grade"]:
-                        master_dict[k]["grade"] = grade
-                    if kg != "" and master_dict[k]["kg"] == "":
-                        master_dict[k]["kg"] = kg
+        all_records = []
+        offset = 0
+        limit = 1000
+        while True:
+            url = f"{SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc&limit={limit}&offset={offset}"
+            headers = {
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": f"Bearer {SUPABASE_ANON_KEY}"
+            }
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as response:
+                records = json.loads(response.read().decode("utf-8"))
+                all_records.extend(records)
+                if len(records) < limit:
+                    break
+                offset += limit
+        for r in all_records:
+            no_gud = r.get("no_gud")
+            if not no_gud:
+                continue
+            k = str(no_gud).strip()
+            barkot = str(r.get("barkot") or "").strip()
+            grade = str(r.get("grade") or "").strip()
+            kg = r.get("kg") if r.get("kg") is not None else ""
+            has_b = is_valid_barcode(barkot)
+            status = "SELESAI" if has_b else ("SELESAI" if r.get("is_done") else "-")
+            
+            if k not in master_dict or has_b:
+                master_dict[k] = {
+                    "no_gud": no_gud,
+                    "barkot": barkot if has_b else "",
+                    "grade": grade or (master_dict[k]["grade"] if k in master_dict else ""),
+                    "kg": kg if kg != "" else (master_dict[k]["kg"] if k in master_dict else ""),
+                    "status": status,
+                    "ket": r.get("tanggal", "")
+                }
+            else:
+                if grade and not master_dict[k]["grade"]:
+                    master_dict[k]["grade"] = grade
+                if kg != "" and master_dict[k]["kg"] == "":
+                    master_dict[k]["kg"] = kg
         print(f"[OK] Berhasil memuat {len(master_dict)} data master realtime dari Cek Barkot (Supabase Cloud).")
         return master_dict
     except Exception as err:

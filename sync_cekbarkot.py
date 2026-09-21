@@ -9,18 +9,26 @@ SUPABASE_URL = "https://jrpklibocgicubevyshm.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycGtsaWJvY2dpY3ViZXZ5c2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NTA3NjUsImV4cCI6MjEwMzQyNjc2NX0.xGoel8SNa2v9DcZBYwKcmjzGF7j6LJ-OQkr919JyYSc"
 
 def fetch_supabase_records():
-    """Mengambil seluruh rekaman barkot_data dari cloud Supabase (cekbarkot)."""
-    url = f"{SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc"
-    headers = {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": f"Bearer {SUPABASE_ANON_KEY}"
-    }
-    req = urllib.request.Request(url, headers=headers)
+    """Mengambil seluruh rekaman barkot_data dari cloud Supabase (cekbarkot) dengan pagination."""
+    all_records = []
+    offset = 0
+    limit = 1000
     print(f"[*] Menghubungi Supabase Cloud ({SUPABASE_URL})...")
-    with urllib.request.urlopen(req, timeout=10) as response:
-        records = json.loads(response.read().decode("utf-8"))
-    print(f"[OK] Berhasil mengambil {len(records)} data bal dari Cek Barkot Supabase!")
-    return records
+    while True:
+        url = f"{SUPABASE_URL}/rest/v1/barkot_data?select=*&order=tanggal.asc,no_gud.asc&limit={limit}&offset={offset}"
+        headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": f"Bearer {SUPABASE_ANON_KEY}"
+        }
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=15) as response:
+            records = json.loads(response.read().decode("utf-8"))
+            all_records.extend(records)
+            if len(records) < limit:
+                break
+            offset += limit
+    print(f"[OK] Berhasil mengambil total {len(all_records)} data bal dari Cek Barkot Supabase!")
+    return all_records
 
 def build_master_dict(records):
     """Membangun master dictionary dari record Supabase secara kronologis."""
