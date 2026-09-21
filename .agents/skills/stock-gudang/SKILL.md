@@ -19,9 +19,9 @@ Skill ini menyediakan standar operasional prosedur, arsitektur data, fungsi help
 ### Hierarki Fisik Gudang:
 1. **Blok (1 s/d 16)**: Area penumpukan bal tembakau di gudang.
 2. **Saf (Kolom)**: Baris susunan dari sisi ke sisi.
-   - Blok 01 – 05: 6 Saf
-   - Blok 06 – 10: 5 Saf
-   - Blok 11 – 16: 6 Saf
+   - Blok 01 – 07: 11 Saf (`Saf -5` s/d `Saf 6`)
+   - Blok 08 – 09: 6 Saf (`Saf 1` s/d `Saf 6`)
+   - Blok 10 – 16: 10 Saf (`Saf -4` s/d `Saf 6`)
 3. **Tingkat (7 Tingkat Kapasitas)**:
    - `T7 (Atas)`: Slot kosong (disiapkan untuk bal baru)
    - `T6`: Slot kosong
@@ -32,13 +32,13 @@ Skill ini menyediakan standar operasional prosedur, arsitektur data, fungsi help
    - `T1 (Dasar)`: Bal aktif dasar
 
 ### Aturan Orientasi Arah:
-- **Header Kolom**: Gunakan nama saf murni (`Saf 1`, `Saf 2`, `Saf 3`, dst.).
+- **Header Kolom**: Gunakan nama saf murni (`Saf -5`, `Saf -4`, ..., `Saf 1`, `Saf 2`, dst.).
 - **Banner Judul Blok**: Wajib mencantumkan arah hadap saf secara dinamis:
-  - `BLOK 01 (Saf 1 Utara - Saf 6 Selatan)`
-  - `BLOK 06 (Saf 1 Utara - Saf 5 Selatan)`
-  - `BLOK 07 (Saf 1 Utara - Saf 4 Selatan)`
-  - `BLOK 11 (Saf 1 Utara - Saf 5 Selatan)`
-  - `BLOK 12 (Saf 1 Utara - Saf 6 Selatan)`
+  - `BLOK 01 (Saf -5 Utara - Saf 6 Selatan)`
+  - `BLOK 07 (Saf -5 Utara - Saf 6 Selatan)`
+  - `BLOK 08 (Saf 1 Utara - Saf 6 Selatan)`
+  - `BLOK 10 (Saf -4 Utara - Saf 6 Selatan)`
+  - `BLOK 16 (Saf -4 Utara - Saf 6 Selatan)`
 
 ---
 
