@@ -157,10 +157,24 @@ if __name__ == '__main__':
     url = sys.argv[1] if len(sys.argv) > 1 else "https://app.notion.com/p/greendmalik/Blok-1-8-3d97f284d5354cb6847450fc92743e88"
     title, md = fetch_notion_page(url)
     if md:
-        target_file = f"Blok 1–8 3d97f284d5354cb6847450fc92743e88.md"
-        with open(target_file, "w", encoding="utf-8") as f:
-            f.write(md)
-        print(f"[OK] Hasil Markdown berhasil disimpan ke: {target_file}")
+        pid = extract_page_id(url)
+        clean_pid = pid.replace('-', '') if pid else 'page'
+        if '3e1b6e87' in clean_pid or '10-16' in url:
+            target_files = [
+                f"Blok 10–16 {clean_pid}.md",
+                "Untitled 9c2d5e3fb8dd456a803eb6608fbde961.md"
+            ]
+        elif '3d97f284' in clean_pid or '1-8' in url:
+            target_files = [f"Blok 1–8 {clean_pid}.md"]
+        else:
+            safe_title = re.sub(r'[\\/*?:"<>|]', "", title)
+            target_files = [f"{safe_title} {clean_pid}.md"]
+            
+        for target_file in target_files:
+            with open(target_file, "w", encoding="utf-8") as f:
+                f.write(md)
+            print(f"[OK] Hasil Markdown berhasil disimpan ke: {target_file}")
+            
         print("\n--- Hasil Render Markdown (Awal) ---")
         print(md[:600])
         print("...\n[OK] Sukses membaca dan menyinkronkan halaman Notion!")
